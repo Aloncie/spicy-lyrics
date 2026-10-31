@@ -63,6 +63,7 @@ import {
 import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
+import { TogglePlaylistPicker } from "../Utils/PlaylistPicker.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -93,6 +94,7 @@ export const Tooltips: {
   NowBarSideToggle: TippyInstance | null;
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
+  AddToPlaylist: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -103,6 +105,7 @@ export const Tooltips: {
   NowBarSideToggle: null,
   LyricsManager: null,
   Settings: null,
+  AddToPlaylist: null,
 };
 
 const PageView = {
@@ -560,6 +563,11 @@ function AppendViewControls(ReAppend: boolean = false) {
             : ""
         }
         ${
+          Fullscreen.IsOpen && !IsPIP
+            ? `<button id="AddToPlaylist" class="ViewControl">${Icons.AddToPlaylist}</button>`
+            : ""
+        }
+        ${
           isTTMLMakerMode
             ? `<button id="LyricsManager" class="ViewControl">${Icons.LyricsManager}</button>`
             : ""
@@ -799,6 +807,21 @@ function AppendViewControls(ReAppend: boolean = false) {
         });
       } catch (err) {
         controlsLogger.warn("Failed to setup Settings tooltip", err);
+      }
+    }
+
+    const addToPlaylistButton = elem.querySelector<HTMLElement>("#AddToPlaylist");
+    if (addToPlaylistButton && !isPip) {
+      try {
+        Tooltips.AddToPlaylist = createTooltip(addToPlaylistButton, {
+          ...Spicetify.TippyProps,
+          content: `Add to Playlist`,
+        });
+        addToPlaylistButton.addEventListener("click", () => {
+          TogglePlaylistPicker(addToPlaylistButton);
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Add to Playlist tooltip", err);
       }
     }
 
