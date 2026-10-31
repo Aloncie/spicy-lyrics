@@ -76,13 +76,13 @@ export const Icons = {
             <path d="${ShufflePath}"/>
         </svg>
 	`,
-  // Smart shuffle: the shuffle arrows, shrunk toward the lower right, with two
-  // sparkles in the corner they leave free.
+  // Smart shuffle: the shuffle arrows, shrunk toward the lower right, with a large
+  // sparkle and a small one in the corner they leave free.
   SmartShuffle: `
         <svg viewBox="0 0 25 20" xmlns="http://www.w3.org/2000/svg" class="SmartShuffle">
-            <path transform="translate(5 4) scale(0.8)" d="${ShufflePath}"/>
-            <path d="M4.2 0c.29 2.65 1.55 3.91 4.2 4.2-2.65.29-3.91 1.55-4.2 4.2-.29-2.65-1.55-3.91-4.2-4.2 2.65-.29 3.91-1.55 4.2-4.2Z"/>
-            <path d="M9.5 0c.11 1.01.59 1.49 1.6 1.6-1.01.11-1.49.59-1.6 1.6-.11-1.01-.59-1.49-1.6-1.6 1.01-.11 1.49-.59 1.6-1.6Z"/>
+            <path transform="translate(10 7.6) scale(0.6)" d="${ShufflePath}"/>
+            <path d="M8 0c0.56 5.04 2.96 7.44 8 8c-5.04 0.56 -7.44 2.96 -8 8c-0.56 -5.04 -2.96 -7.44 -8 -8c5.04 -0.56 7.44 -2.96 8 -8Z"/>
+            <path d="M17.6 0c0.17 1.51 0.89 2.23 2.4 2.4c-1.51 0.17 -2.23 0.89 -2.4 2.4c-0.17 -1.51 -0.89 -2.23 -2.4 -2.4c1.51 -0.17 2.23 -0.89 2.4 -2.4Z"/>
         </svg>
 	`,
   Loop: `
