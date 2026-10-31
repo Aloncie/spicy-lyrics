@@ -7,7 +7,7 @@ import { onExperimentChange } from "../../utils/experiments.ts";
 import { $isNowBarOpen, $nowBarSide } from "../../utils/uiState.ts";
 import Global from "../Global/Global.ts";
 import Session from "../Global/Session.ts";
-import { SpotifyPlayer } from "../Global/SpotifyPlayer.ts";
+import { SpotifyPlayer, type ShuffleType } from "../Global/SpotifyPlayer.ts";
 import PageView, { PageContainer } from "../Pages/PageView.ts";
 import { Icons } from "../Styling/Icons.ts";
 import Fullscreen, {
@@ -307,7 +307,7 @@ function OpenNowBar(skipSaving: boolean = false) {
         ControlsElement.classList.add("PlaybackControls");
         ControlsElement.innerHTML = `
                     <div class="PlaybackControl ShuffleToggle">
-                        ${Icons.Shuffle}
+                        ${SpotifyPlayer.ShuffleType === "smart" ? Icons.SmartShuffle : Icons.Shuffle}
                     </div>
                     ${Icons.PrevTrack}
                     <div class="PlaybackControl PlayStateToggle ${
@@ -328,12 +328,8 @@ function OpenNowBar(skipSaving: boolean = false) {
           }
         }
 
-        if (SpotifyPlayer.ShuffleType !== "none") {
-          const shuffleToggle = ControlsElement.querySelector(".ShuffleToggle");
-          if (shuffleToggle) {
-            shuffleToggle.classList.add("Enabled");
-          }
-        }
+        const shuffleToggle = ControlsElement.querySelector(".ShuffleToggle");
+        if (shuffleToggle) ApplyShuffleState(shuffleToggle, SpotifyPlayer.ShuffleType);
 
         const controlsMaid = new Maid();
 
@@ -379,18 +375,11 @@ function OpenNowBar(skipSaving: boolean = false) {
           SpotifyPlayer.Skip.Next();
         };
 
+        // The button follows the player state through the playback:shuffle event,
+        // since which mode comes next depends on what the context allows.
         const shuffleHandler = () => {
           if (!ShuffleControl) return;
-
-          if (SpotifyPlayer.ShuffleType === "none") {
-            SpotifyPlayer.ShuffleType = "normal";
-            ShuffleControl.classList.add("Enabled");
-            Spicetify.Player.setShuffle(true);
-          } else if (SpotifyPlayer.ShuffleType === "normal") {
-            SpotifyPlayer.ShuffleType = "none";
-            ShuffleControl.classList.remove("Enabled");
-            Spicetify.Player.setShuffle(false);
-          }
+          void SpotifyPlayer.CycleShuffle();
         };
 
         const loopHandler = () => {
@@ -1764,18 +1753,26 @@ Global.Event.listen("playback:loop", (e: string) => {
   }
 });
 
-Global.Event.listen("playback:shuffle", (e: string) => {
+// Smart shuffle is shuffle plus recommended tracks: lit like plain shuffle, with
+// its own icon so the two can be told apart.
+function ApplyShuffleState(toggle: Element, type: ShuffleType) {
+  toggle.classList.toggle("Enabled", type !== "none");
+  toggle.classList.toggle("Smart", type === "smart");
+  const svg = toggle.querySelector("svg");
+  const isSmart = type === "smart";
+  if (svg && svg.classList.contains("SmartShuffle") !== isSmart) {
+    ReplaceIcon(svg, isSmart ? Icons.SmartShuffle : Icons.Shuffle);
+  }
+}
+
+Global.Event.listen("playback:shuffle", (e: ShuffleType) => {
   if (Fullscreen.IsOpen) {
     if (ActivePlaybackControlsInstance) {
       const PlaybackControls = ActivePlaybackControlsInstance.GetElement();
       const ShuffleButton = PlaybackControls.querySelector(".ShuffleToggle");
       if (!ShuffleButton) return;
 
-      if (e !== "none") {
-        ShuffleButton.classList.add("Enabled");
-      } else {
-        ShuffleButton.classList.remove("Enabled");
-      }
+      ApplyShuffleState(ShuffleButton, e);
     }
   }
 });

@@ -32,7 +32,7 @@ import {
 import Global from "./components/Global/Global.ts";
 import Platform from "./components/Global/Platform.ts";
 import Session from "./components/Global/Session.ts";
-import { SpotifyPlayer } from "./components/Global/SpotifyPlayer.ts";
+import { SpotifyPlayer, type ShuffleType } from "./components/Global/SpotifyPlayer.ts";
 import PageView, { GetPageRoot, PageContainer } from "./components/Pages/PageView.ts";
 import LoadFonts, { ApplyFontPixel } from "./components/Styling/Fonts.ts";
 import { Icons } from "./components/Styling/Icons.ts";
@@ -1006,15 +1006,17 @@ async function main() {
     }
 
     {
-      type ShuffleType = "smart" | "normal" | "none";
       let lastShuffleType: ShuffleType | null = null;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       new IntervalManager(Infinity, () => {
-        const ShuffleType: ShuffleType = (Spicetify.Player as any).origin._state.smartShuffle
-          ? "smart"
-          : (Spicetify.Player as any).origin._state.shuffle
-            ? "normal"
-            : "none";
+        // smartShuffle can stay set after shuffle is turned off; Spotify only counts
+        // it as smart shuffle while shuffle itself is on.
+        const state = (Spicetify.Player as any).origin._state;
+        const ShuffleType: ShuffleType = state.shuffle
+          ? state.smartShuffle
+            ? "smart"
+            : "normal"
+          : "none";
         SpotifyPlayer.ShuffleType = ShuffleType;
         if (lastShuffleType !== ShuffleType) {
           Global.Event.evoke("playback:shuffle", ShuffleType);
