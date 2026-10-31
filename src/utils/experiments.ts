@@ -158,6 +158,14 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
+  {
+    id: "clearerToggleStates",
+    label: "Clearer Shuffle and Repeat States",
+    description:
+      "In fullscreen, shuffle and repeat are dimmed while off and get a dot underneath while on, so their state is readable on any artwork. Disable to go back to telling them apart by the glow alone.",
+    default: true,
+    pageClass: "Exp_ClearerToggleStates",
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
