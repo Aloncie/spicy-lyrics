@@ -130,6 +130,18 @@ function shouldHideLyricsArea(): boolean {
   // The NPV card has its own switch (Hide When a Song Has No Lyrics), which removes it.
   if (IsCardMode) return false;
   if (IsFullscreenLyricsHiddenByUser()) return true;
+  return noticeHidesLyricsArea();
+}
+
+/**
+ * Whether the lyrics area is hidden because the song has none, whatever the
+ * fullscreen lyrics toggle says. Showing lyrics then changes nothing on screen.
+ */
+export function IsLyricsAreaHiddenForMissingLyrics(): boolean {
+  return !!PageContainer && !IsCardMode && noticeHidesLyricsArea();
+}
+
+function noticeHidesLyricsArea(): boolean {
   if (!shownNotice) return false;
   if (!$showNoLyricsNotice.get() && NO_LYRICS_NOTICES.has(shownNotice)) return true;
   // Fullscreen, Cinema View and the popup show the song on its own instead of the

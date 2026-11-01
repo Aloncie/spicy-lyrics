@@ -67,6 +67,8 @@ import {
 import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
+import { ShowFullscreenHint } from "../Utils/FullscreenHint.ts";
+import { IsLyricsAreaHiddenForMissingLyrics } from "../../utils/Lyrics/LyricsNotice.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -694,6 +696,11 @@ function AppendViewControls(ReAppend: boolean = false) {
           $hideFullscreenLyrics.set(!$hideFullscreenLyrics.get());
           lyricsToggle.innerHTML = $hideFullscreenLyrics.get() ? Icons.ShowLyrics : Icons.HideLyrics;
           Tooltips.LyricsToggle?.setContent(label());
+          // On a song without lyrics the layout stays the same either way, which
+          // reads as a broken button without a word of explanation.
+          if (IsLyricsAreaHiddenForMissingLyrics()) {
+            ShowFullscreenHint("This song has no lyrics");
+          }
           // The lyrics were out of layout while hidden; measure and scroll them again.
           setTimeout(() => {
             GetCurrentLyricsContainerInstance()?.Resize();
