@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { createTooltip } from "../../utils/tooltip.ts";
 import Global from "./Global.ts";
+import Logger from "../../utils/Logger.ts";
 import GetProgress, {
   _DEPRECATED___GetProgress,
 } from "../../utils/Gets/GetProgress.ts";
@@ -129,6 +130,46 @@ export type Artist = {
   uri: string;
 };
 
+const playerLogger = new Logger("Spotify Player");
+
+export type ShuffleType = "none" | "normal" | "smart";
+
+// The order Spotify's own shuffle button steps through, and the numbers its
+// ShuffleAPI uses for each mode.
+const SHUFFLE_ORDER: readonly ShuffleType[] = ["none", "normal", "smart"];
+const SHUFFLE_API_MODE: Record<ShuffleType, number> = { none: 0, normal: 1, smart: 2 };
+
+/**
+ * Step shuffle to the next mode the current context allows: off, on, then smart
+ * shuffle where Spotify offers it. Smart shuffle can't be set through
+ * Player.setShuffle, so this goes through Platform.ShuffleAPI, and falls back to a
+ * plain on/off toggle on clients without it.
+ */
+async function CycleShuffle(): Promise<void> {
+  const current = SpotifyPlayer.ShuffleType;
+  const contextUri: string | undefined = Spicetify.Player.data?.context?.uri;
+  const shuffleApi = Spicetify.Platform?.ShuffleAPI;
+
+  if (contextUri && shuffleApi?.getAvailableShuffleModes && shuffleApi?.setShuffle) {
+    try {
+      const available: (number | null)[] = await shuffleApi.getAvailableShuffleModes(contextUri);
+      const start = SHUFFLE_ORDER.indexOf(current);
+      for (let step = 1; step < SHUFFLE_ORDER.length; step++) {
+        const next = SHUFFLE_ORDER[(start + step) % SHUFFLE_ORDER.length];
+        if (available.includes(SHUFFLE_API_MODE[next])) {
+          await shuffleApi.setShuffle(contextUri, SHUFFLE_API_MODE[next]);
+          return;
+        }
+      }
+      return;
+    } catch (err) {
+      playerLogger.warn("ShuffleAPI failed, falling back to an on/off toggle", err);
+    }
+  }
+
+  Spicetify.Player.setShuffle(current === "none");
+}
+
 export const SpotifyPlayer = {
   IsPlaying: false,
   _DEPRECATED_: {
@@ -205,7 +246,8 @@ export const SpotifyPlayer = {
     Prev: Spicetify?.Player?.back,
   },
   LoopType: "none",
-  ShuffleType: "none",
+  ShuffleType: "none" as ShuffleType,
+  CycleShuffle,
   IsDJ: (): boolean => {
     const data = Spicetify?.Player?.data;
     if (!data) return false;
