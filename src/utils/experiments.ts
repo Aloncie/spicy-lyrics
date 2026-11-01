@@ -158,6 +158,13 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
+  {
+    id: "escapeLeavesFullscreen",
+    label: "Escape Leaves Fullscreen Directly",
+    description:
+      "A preference for people who keep Spotify maximised, where Cinema View looks almost the same as fullscreen. Pressing Escape in fullscreen closes the view in one press, as it does in Cinema View, instead of first dropping to Cinema View. Disable to keep the two-step behaviour.",
+    default: false,
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
