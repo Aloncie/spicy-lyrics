@@ -158,6 +158,14 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
+  {
+    id: "lyricsTextPanel",
+    label: "Lyrics as Text",
+    description:
+      "Adds a button that opens the current lyrics as plain text over the lyrics area, where any part of them can be selected and copied, with a Copy all button and a switch between the original and romanized text. Disable to hide the button.",
+    default: true,
+    pageClass: "Exp_LyricsTextPanel",
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */

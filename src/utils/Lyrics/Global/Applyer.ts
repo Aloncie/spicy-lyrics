@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 
 import { $currentLyricsData, $currentLyricsType } from "../../stores.ts";
+import { SetLyricsTextSource } from "../../../components/Utils/LyricsTextPanel.ts";
 import { ClearScrollSimplebar } from "../../Scrolling/Simplebar/ScrollSimplebar.ts";
 import { setBlurringLastLine } from "../Animator/Lyrics/LyricsAnimator.ts";
 import { DestroyAllLyricsContainers } from "../Applyer/CreateLyricsContainer.ts";
@@ -106,6 +107,7 @@ export default async function ApplyLyrics(lyricsContent: FetchLyricsResult): Pro
 
   // The copy for each keyword lives in LyricsNotice.ts.
   if (typeof descriptor === "string" && HasNotice(descriptor)) {
+    SetLyricsTextSource(null);
     $currentLyricsType.set("None");
 
     if (descriptor === "lyrics-not-found") {
@@ -145,6 +147,7 @@ export default async function ApplyLyrics(lyricsContent: FetchLyricsResult): Pro
   }
 
   const lyrics = descriptor as LyricsData;
+  SetLyricsTextSource(lyrics);
 
   // Lyrics replace any notice, whichever path applied them (a TTML upload re-applies
   // without going through fetchLyrics), so a later layout sync can't hide them.

@@ -63,6 +63,7 @@ import {
 import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
+import { IsLyricsTextPanelOpen, ToggleLyricsTextPanel } from "../Utils/LyricsTextPanel.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -93,6 +94,7 @@ export const Tooltips: {
   NowBarSideToggle: TippyInstance | null;
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
+  LyricsTextToggle: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -103,6 +105,7 @@ export const Tooltips: {
   NowBarSideToggle: null,
   LyricsManager: null,
   Settings: null,
+  LyricsTextToggle: null,
 };
 
 const PageView = {
@@ -532,6 +535,13 @@ function AppendViewControls(ReAppend: boolean = false) {
               }</button>`
             : ""
         }
+        ${
+          IsPIP
+            ? ""
+            : `<button id="LyricsTextToggle" class="ViewControl${
+                IsLyricsTextPanelOpen() ? " Active" : ""
+              }">${Icons.LyricsText}</button>`
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -666,6 +676,19 @@ function AppendViewControls(ReAppend: boolean = false) {
         });
       } catch (err) {
         controlsLogger.warn("Failed to setup Compact Mode tooltip", err);
+      }
+    }
+
+    const lyricsTextToggle = elem.querySelector<HTMLElement>("#LyricsTextToggle");
+    if (lyricsTextToggle && !isPip) {
+      try {
+        Tooltips.LyricsTextToggle = createTooltip(lyricsTextToggle, {
+          ...Spicetify.TippyProps,
+          content: `Lyrics as Text`,
+        });
+        lyricsTextToggle.addEventListener("click", () => ToggleLyricsTextPanel());
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Lyrics as Text tooltip", err);
       }
     }
 
