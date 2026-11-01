@@ -74,6 +74,7 @@ import {
   RemoveCurrentRecommendation,
   SyncRecommendationState,
 } from "../Utils/SmartShuffleRecommendation.ts";
+import { IsQueuePanelOpen, ToggleQueuePanel } from "../Utils/QueuePanel.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -107,6 +108,7 @@ export const Tooltips: {
   AddToPlaylist: TippyInstance | null;
   LyricsToggle: TippyInstance | null;
   RemoveRecommendation: TippyInstance | null;
+  QueueToggle: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -120,6 +122,7 @@ export const Tooltips: {
   AddToPlaylist: null,
   LyricsToggle: null,
   RemoveRecommendation: null,
+  QueueToggle: null,
 };
 
 const PageView = {
@@ -561,6 +564,13 @@ function AppendViewControls(ReAppend: boolean = false) {
             ? `<button id="RemoveRecommendation" class="ViewControl">${Icons.Dislike}</button>`
             : ""
         }
+        ${
+          (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP && !IsCompactMode()
+            ? `<button id="QueueToggle" class="ViewControl${
+                IsQueuePanelOpen() ? " Active" : ""
+              }">${Icons.Queue}</button>`
+            : ""
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -746,6 +756,19 @@ function AppendViewControls(ReAppend: boolean = false) {
       }
     }
     SyncRecommendationState();
+
+    const queueToggle = elem.querySelector<HTMLElement>("#QueueToggle");
+    if (queueToggle && !isPip) {
+      try {
+        Tooltips.QueueToggle = createTooltip(queueToggle, {
+          ...Spicetify.TippyProps,
+          content: `Queue`,
+        });
+        queueToggle.addEventListener("click", () => ToggleQueuePanel());
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Queue tooltip", err);
+      }
+    }
 
     const romanizationToggle = elem.querySelector("#RomanizationToggle");
     if (romanizationToggle) {

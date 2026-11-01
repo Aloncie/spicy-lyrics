@@ -17,6 +17,7 @@ import Fullscreen, {
 } from "./Fullscreen.ts";
 import { IsPIP } from "./PopupLyrics.ts";
 import { ClosePlaylistPicker } from "./PlaylistPicker.ts";
+import { CloseQueuePanel } from "./QueuePanel.ts";
 import { IsCompactMode } from "./CompactMode.ts";
 import { Maid } from "../../modules/Maid.ts";
 import Scheduler from "../../modules/Scheduler.ts";
@@ -1180,6 +1181,7 @@ function OpenNowBar(skipSaving: boolean = false) {
 
 function CleanUpActiveComponents() {
   ClosePlaylistPicker();
+  CloseQueuePanel();
 
   if (NowBarFullscreenMaid && !NowBarFullscreenMaid?.IsDestroyed()) {
     NowBarFullscreenMaid.Destroy();
