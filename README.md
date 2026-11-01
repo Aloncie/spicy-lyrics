@@ -1,3 +1,61 @@
+# Spicy Lyrics — Aloncie's fork
+
+This is an unofficial fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics) with a few fullscreen fixes and features on top. Everything else is the original extension, kept in sync with the main project.
+
+> [!NOTE]
+> **I don't write the code myself.** The changes in this fork are made with an AI coding agent (Claude Code); I decide what to change, test the results in my own Spotify, and maintain the fork. Keep that in mind when you use it or read the code.
+
+> [!IMPORTANT]
+> This fork is not supported by the Spicy Lyrics team. If something breaks here, please [open an issue in this fork](https://github.com/Aloncie/spicy-lyrics/issues), not in the Spicy Lyrics Discord.
+
+## What's different
+
+All of these live in **Settings → Experiments**, so each one can be turned off to get the original behaviour back.
+
+| Change | What it does | Branch |
+| --- | --- | --- |
+| Add to playlist | A button in the fullscreen controls opens a list of your playlists over the artwork, so you can save the current track without leaving fullscreen. | [`feat/fullscreen-add-to-playlist`](https://github.com/Aloncie/spicy-lyrics/tree/feat/fullscreen-add-to-playlist) |
+| Lyrics toggle | A button in the fullscreen controls hides the lyrics and centres the cover, the same layout shown for songs without lyrics. Click again to bring them back. | [`feat/fullscreen-lyrics-toggle`](https://github.com/Aloncie/spicy-lyrics/tree/feat/fullscreen-lyrics-toggle) |
+| Smart shuffle | The fullscreen shuffle button steps through off, shuffle and smart shuffle like Spotify's own button, and smart shuffle has its own icon. | [`fix/fullscreen-smart-shuffle`](https://github.com/Aloncie/spicy-lyrics/tree/fix/fullscreen-smart-shuffle) |
+| Clearer shuffle/repeat | In fullscreen, shuffle and repeat are dimmed while off and get a dot while on, so you can tell them apart on any cover. | [`style/fullscreen-toggle-states`](https://github.com/Aloncie/spicy-lyrics/tree/style/fullscreen-toggle-states) |
+| Escape leaves fullscreen *(personal preference, off by default)* | One Escape closes fullscreen instead of dropping to Cinema View first. Useful if you keep Spotify maximised. | [`personal/esc-exits-fullscreen`](https://github.com/Aloncie/spicy-lyrics/tree/personal/esc-exits-fullscreen) |
+
+Each change also has its own branch based on the original code, in case the Spicy Lyrics team wants to take one.
+
+## Install the fork
+
+You need Spicetify installed (see [step 1 below](#1-install-spicetify)).
+
+1. **Remove the official Spicy Lyrics** if you have it: Marketplace → Installed → Spicy Lyrics → Remove. Otherwise two copies run at once.
+2. **Download `spicy-lyrics.js`** from the [latest release](https://github.com/Aloncie/spicy-lyrics/releases/latest).
+3. **Put it in your Spicetify `Extensions` folder:**
+   - Windows: `%appdata%\spicetify\Extensions`
+   - macOS / Linux: `~/.config/spicetify/Extensions`
+4. **Enable it and apply**, in a terminal:
+   ```bash
+   spicetify config extensions spicy-lyrics.js
+   spicetify apply
+   ```
+
+### Updating
+
+Download the new `spicy-lyrics.js` from the [releases](https://github.com/Aloncie/spicy-lyrics/releases), replace the old file, and run `spicetify apply` again. The fork does not update itself.
+
+When the official Spicy Lyrics publishes a new version, the extension will show its "update is out" notice. Clicking *Update* only reloads Spotify and keeps the fork; wait for a new release here instead.
+
+### Going back to the official version
+
+```bash
+spicetify config extensions spicy-lyrics.js-
+spicetify apply
+```
+
+Then delete `spicy-lyrics.js` from the `Extensions` folder and install Spicy Lyrics from the Marketplace again.
+
+---
+
+*The original Spicy Lyrics README follows.*
+
 # Spicy Lyrics
 [![Github Version](https://img.shields.io/github/v/release/spikerko/spicy-lyrics)](https://github.com/spikerko/spicy-lyrics/) [![Github Stars badge](https://img.shields.io/github/stars/spikerko/spicy-lyrics?style=social)](https://github.com/spikerko/spicy-lyrics/) [![Discord Badge](https://dcbadge.limes.pink/api/server/uqgXU5wh8j?style=flat)](https://discord.com/invite/uqgXU5wh8j)
 
