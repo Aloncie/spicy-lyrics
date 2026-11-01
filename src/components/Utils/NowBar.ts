@@ -16,6 +16,10 @@ import Fullscreen, {
   SetControlsDragLock,
 } from "./Fullscreen.ts";
 import { IsPIP } from "./PopupLyrics.ts";
+import {
+  RemoveCurrentRecommendation,
+  SyncRecommendationState,
+} from "./SmartShuffleRecommendation.ts";
 import { IsCompactMode } from "./CompactMode.ts";
 import { Maid } from "../../modules/Maid.ts";
 import Scheduler from "../../modules/Scheduler.ts";
@@ -306,6 +310,11 @@ function OpenNowBar(skipSaving: boolean = false) {
         const ControlsElement = document.createElement("div");
         ControlsElement.classList.add("PlaybackControls");
         ControlsElement.innerHTML = `
+                    ${
+                      IsPIP
+                        ? ""
+                        : `<div class="PlaybackControl RemoveRecommendationControl" id="RemoveRecommendation">${Icons.Dislike}</div>`
+                    }
                     <div class="PlaybackControl ShuffleToggle">
                         ${Icons.Shuffle}
                     </div>
@@ -365,6 +374,7 @@ function OpenNowBar(skipSaving: boolean = false) {
         const NextTrackControl = ControlsElement.querySelector(".NextTrack");
         const ShuffleControl = ControlsElement.querySelector(".ShuffleToggle");
         const LoopControl = ControlsElement.querySelector(".LoopToggle");
+        const RemoveRecommendationControl = ControlsElement.querySelector(".RemoveRecommendationControl");
 
         // Create named handlers for click events
         const playPauseHandler = () => {
@@ -414,6 +424,14 @@ function OpenNowBar(skipSaving: boolean = false) {
           }
         };
 
+        if (RemoveRecommendationControl) {
+          const removeRecommendationHandler = () => RemoveCurrentRecommendation();
+          RemoveRecommendationControl.addEventListener("click", removeRecommendationHandler);
+          controlsMaid.Give(() =>
+            RemoveRecommendationControl.removeEventListener("click", removeRecommendationHandler)
+          );
+          SyncRecommendationState();
+        }
         if (PlayPauseControl) {
           PlayPauseControl.addEventListener("click", playPauseHandler);
           const el = PlayPauseControl;

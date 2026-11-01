@@ -1087,8 +1087,34 @@ body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [
   display: none !important;
 }
 
-/* Shown only while smart shuffle plays one of its recommendations. */
-#SpicyLyricsPage:not(.Exp_FullscreenRemoveRecommendation) .ViewControls #RemoveRecommendation,
-#SpicyLyricsPage:not(.SL_SmartShuffleRecommendation) .ViewControls #RemoveRecommendation {
+/* Left of shuffle in the transport row, sized like shuffle and repeat. It only
+   shows while smart shuffle plays one of its recommendations; otherwise it keeps
+   its slot so the row doesn't shift on every track change. With the experiment
+   off it's gone and the row is the original one. */
+#SpicyLyricsPage.Fullscreen
+  .ContentBox
+  .NowBar
+  .CenteredView
+  .Header
+  .MediaBox
+  .MediaContent
+  .PlaybackControls
+  .PlaybackControl.RemoveRecommendationControl {
+  width: 7cqw;
+  color: #fff;
+}
+
+#SpicyLyricsPage.Fullscreen .PlaybackControls .PlaybackControl.RemoveRecommendationControl svg {
+  width: 100%;
+  height: auto;
+  stroke-width: 2.4;
+}
+
+#SpicyLyricsPage:not(.SL_SmartShuffleRecommendation) .PlaybackControls #RemoveRecommendation {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#SpicyLyricsPage:not(.Exp_FullscreenRemoveRecommendation) .PlaybackControls #RemoveRecommendation {
   display: none !important;
 }
