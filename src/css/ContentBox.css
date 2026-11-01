@@ -2726,3 +2726,119 @@
     scale: none;
   }
 }
+
+/* --- Lyrics as text --------------------------------------------------------- */
+/* Placed by LyricsTextPanel.ts over the free part of the page. The page turns
+   selection off everywhere; this is the one place it is meant to work. */
+#SpicyLyricsPage:not(.Exp_LyricsTextPanel) #LyricsTextToggle,
+#SpicyLyricsPage:not(.Exp_LyricsTextPanel) .SL_LyricsTextPanel {
+  display: none !important;
+}
+
+#SpicyLyricsPage .ContentBox .SL_LyricsTextPanel {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 10px 10px;
+  border-radius: 18px;
+  background: rgba(18, 18, 22, 0.6);
+  -webkit-backdrop-filter: blur(32px) saturate(1.4);
+  backdrop-filter: blur(32px) saturate(1.4);
+  box-shadow:
+    0 24px 60px -18px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  color: #fff;
+  opacity: 0;
+  scale: 0.98;
+  transition:
+    opacity 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#SpicyLyricsPage .ContentBox .SL_LyricsTextPanel.Visible {
+  opacity: 1;
+  scale: 1;
+  transition-duration: 220ms;
+}
+
+/* The panel covers the whole free area so the animated lyrics don't show around
+   it; the text itself stays a readable column in the middle. */
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Header,
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Line,
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Empty {
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Header {
+  display: flex;
+  gap: 8px;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Button {
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Button[hidden] {
+  display: none;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Close {
+  margin-left: auto;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 8px 12px;
+  outline: none;
+  font-size: clamp(15px, 1.8cqh, 20px);
+  font-weight: 500;
+  line-height: 1.55;
+  -webkit-user-select: text;
+  user-select: text;
+  cursor: text;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Body ::selection {
+  background: rgba(255, 255, 255, 0.85);
+  color: #121212;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Line.Background {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9em;
+}
+
+#SpicyLyricsPage .SL_LyricsTextPanel .SL_LT_Empty {
+  color: rgba(255, 255, 255, 0.55);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #SpicyLyricsPage .ContentBox .SL_LyricsTextPanel {
+    scale: none;
+  }
+}

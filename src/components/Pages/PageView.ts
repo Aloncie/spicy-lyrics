@@ -74,7 +74,12 @@ import {
   RemoveCurrentRecommendation,
   SyncRecommendationState,
 } from "../Utils/SmartShuffleRecommendation.ts";
-import { IsQueuePanelOpen, ToggleQueuePanel } from "../Utils/QueuePanel.ts";
+import { CloseQueuePanel, IsQueuePanelOpen, ToggleQueuePanel } from "../Utils/QueuePanel.ts";
+import {
+  CloseLyricsTextPanel,
+  IsLyricsTextPanelOpen,
+  ToggleLyricsTextPanel,
+} from "../Utils/LyricsTextPanel.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -109,6 +114,7 @@ export const Tooltips: {
   LyricsToggle: TippyInstance | null;
   RemoveRecommendation: TippyInstance | null;
   QueueToggle: TippyInstance | null;
+  LyricsTextToggle: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -123,6 +129,7 @@ export const Tooltips: {
   LyricsToggle: null,
   RemoveRecommendation: null,
   QueueToggle: null,
+  LyricsTextToggle: null,
 };
 
 const PageView = {
@@ -571,6 +578,13 @@ function AppendViewControls(ReAppend: boolean = false) {
               }">${Icons.Queue}</button>`
             : ""
         }
+        ${
+          IsPIP
+            ? ""
+            : `<button id="LyricsTextToggle" class="ViewControl${
+                IsLyricsTextPanelOpen() ? " Active" : ""
+              }">${Icons.LyricsText}</button>`
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -764,9 +778,29 @@ function AppendViewControls(ReAppend: boolean = false) {
           ...Spicetify.TippyProps,
           content: `Queue`,
         });
-        queueToggle.addEventListener("click", () => ToggleQueuePanel());
+        queueToggle.addEventListener("click", () => {
+          // The queue and the lyrics text open in the same spot.
+          CloseLyricsTextPanel();
+          ToggleQueuePanel();
+        });
       } catch (err) {
         controlsLogger.warn("Failed to setup Queue tooltip", err);
+      }
+    }
+
+    const lyricsTextToggle = elem.querySelector<HTMLElement>("#LyricsTextToggle");
+    if (lyricsTextToggle && !isPip) {
+      try {
+        Tooltips.LyricsTextToggle = createTooltip(lyricsTextToggle, {
+          ...Spicetify.TippyProps,
+          content: `Lyrics as Text`,
+        });
+        lyricsTextToggle.addEventListener("click", () => {
+          CloseQueuePanel();
+          ToggleLyricsTextPanel();
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Lyrics as Text tooltip", err);
       }
     }
 
