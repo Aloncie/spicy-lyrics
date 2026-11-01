@@ -1200,6 +1200,12 @@ async function main() {
 
   document.addEventListener("fullscreenchange", async () => {
     if (!document.fullscreenElement && Fullscreen.IsOpen && !Fullscreen.CinemaViewOpen) {
+      // The browser has already left fullscreen (usually on Escape). Close the view
+      // outright, as Escape does in Cinema View, instead of stepping down to it.
+      if (isExperimentEnabled("escapeLeavesFullscreen")) {
+        if (await Fullscreen.Close()) Session.GoBackFrom("/SpicyLyrics");
+        return;
+      }
       Fullscreen.CinemaViewOpen = true;
       await ExitFullscreenElement();
       PageView.AppendViewControls(true);
