@@ -63,6 +63,10 @@ import {
 import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
+import {
+  RemoveCurrentRecommendation,
+  SyncRecommendationState,
+} from "../Utils/SmartShuffleRecommendation.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -93,6 +97,7 @@ export const Tooltips: {
   NowBarSideToggle: TippyInstance | null;
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
+  RemoveRecommendation: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -103,6 +108,7 @@ export const Tooltips: {
   NowBarSideToggle: null,
   LyricsManager: null,
   Settings: null,
+  RemoveRecommendation: null,
 };
 
 const PageView = {
@@ -532,6 +538,11 @@ function AppendViewControls(ReAppend: boolean = false) {
               }</button>`
             : ""
         }
+        ${
+          (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP
+            ? `<button id="RemoveRecommendation" class="ViewControl">${Icons.Dislike}</button>`
+            : ""
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -668,6 +679,22 @@ function AppendViewControls(ReAppend: boolean = false) {
         controlsLogger.warn("Failed to setup Compact Mode tooltip", err);
       }
     }
+
+    const removeRecommendationButton = elem.querySelector<HTMLElement>("#RemoveRecommendation");
+    if (removeRecommendationButton && !isPip) {
+      try {
+        Tooltips.RemoveRecommendation = createTooltip(removeRecommendationButton, {
+          ...Spicetify.TippyProps,
+          content: `Remove Recommendation`,
+        });
+        removeRecommendationButton.addEventListener("click", () => {
+          RemoveCurrentRecommendation();
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Remove Recommendation tooltip", err);
+      }
+    }
+    SyncRecommendationState();
 
     const romanizationToggle = elem.querySelector("#RomanizationToggle");
     if (romanizationToggle) {

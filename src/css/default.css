@@ -1086,3 +1086,9 @@ body.SpicyLyrics_RemoveSpotifyLyricsButton [data-testid="now-playing-bar"] [data
 body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)) {
   display: none !important;
 }
+
+/* Shown only while smart shuffle plays one of its recommendations. */
+#SpicyLyricsPage:not(.Exp_FullscreenRemoveRecommendation) .ViewControls #RemoveRecommendation,
+#SpicyLyricsPage:not(.SL_SmartShuffleRecommendation) .ViewControls #RemoveRecommendation {
+  display: none !important;
+}
