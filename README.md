@@ -1,6 +1,6 @@
 # Spicy Lyrics — Aloncie's fork
 
-This is an unofficial fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics) with a few fullscreen fixes and features on top. Everything else is the original extension, kept in sync with the main project.
+This is an unofficial fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-lyrics) with extra features and fixes on top. Everything else is the original extension, kept in sync with the main project.
 
 > [!NOTE]
 > **I don't write the code myself.** The changes in this fork are made with an AI coding agent (Claude Code); I decide what to change, test the results in my own Spotify, and maintain the fork. Keep that in mind when you use it or read the code.
