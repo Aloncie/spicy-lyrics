@@ -2,9 +2,12 @@ import { createTooltip } from "../../utils/tooltip.ts";
 import fetchLyrics, { ShowQueueLoader } from "../../utils/Lyrics/fetchLyrics.ts";
 import { LyricsQueueRetry } from "../../utils/Lyrics/LyricsQueueRetry.ts";
 import { SkeletonMarkup } from "../../utils/Lyrics/LyricsSkeleton.ts";
-import { $forceCompactMode } from "../../utils/uiState.ts";
+import { $forceCompactMode, $hideFullscreenLyrics } from "../../utils/uiState.ts";
 import "../../css/Loaders/DotLoader.css";
-import { DestroyAllLyricsContainers } from "../../utils/Lyrics/Applyer/CreateLyricsContainer.ts";
+import {
+  DestroyAllLyricsContainers,
+  GetCurrentLyricsContainerInstance,
+} from "../../utils/Lyrics/Applyer/CreateLyricsContainer.ts";
 import ApplyLyrics, {
   cleanupApplyLyricsAbortController,
 } from "../../utils/Lyrics/Global/Applyer.ts";
@@ -17,6 +20,7 @@ import {
 import {
   CleanupScrollEvents,
   InitializeScrollEvents,
+  QueueForceScroll,
   ResetLastLine,
 } from "../../utils/Scrolling/ScrollToActiveLine.ts";
 import {
@@ -64,6 +68,8 @@ import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
 import { TogglePlaylistPicker } from "../Utils/PlaylistPicker.ts";
+import { ShowFullscreenHint } from "../Utils/FullscreenHint.ts";
+import { IsLyricsAreaHiddenForMissingLyrics } from "../../utils/Lyrics/LyricsNotice.ts";
 import { CleanUpIsByCommunity } from "../../utils/Lyrics/Applyer/Credits/ApplyIsByCommunity.tsx";
 import { OpenLyricsDBPanel } from "../../utils/openLyricsDBPanel.tsx";
 import { openSettingsPanel } from "../../utils/settings.ts";
@@ -95,6 +101,7 @@ export const Tooltips: {
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
   AddToPlaylist: TippyInstance | null;
+  LyricsToggle: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -106,6 +113,7 @@ export const Tooltips: {
   LyricsManager: null,
   Settings: null,
   AddToPlaylist: null,
+  LyricsToggle: null,
 };
 
 const PageView = {
@@ -535,6 +543,13 @@ function AppendViewControls(ReAppend: boolean = false) {
               }</button>`
             : ""
         }
+        ${
+          (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP && !IsCompactMode()
+            ? `<button id="LyricsToggle" class="ViewControl">${
+                $hideFullscreenLyrics.get() ? Icons.ShowLyrics : Icons.HideLyrics
+              }</button>`
+            : ""
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -674,6 +689,34 @@ function AppendViewControls(ReAppend: boolean = false) {
         });
       } catch (err) {
         controlsLogger.warn("Failed to setup Compact Mode tooltip", err);
+      }
+    }
+
+    const lyricsToggle = elem.querySelector<HTMLElement>("#LyricsToggle");
+    if (lyricsToggle && !isPip) {
+      try {
+        const label = () => ($hideFullscreenLyrics.get() ? "Show Lyrics" : "Hide Lyrics");
+        Tooltips.LyricsToggle = createTooltip(lyricsToggle, {
+          ...Spicetify.TippyProps,
+          content: label(),
+        });
+        lyricsToggle.addEventListener("click", () => {
+          $hideFullscreenLyrics.set(!$hideFullscreenLyrics.get());
+          lyricsToggle.innerHTML = $hideFullscreenLyrics.get() ? Icons.ShowLyrics : Icons.HideLyrics;
+          Tooltips.LyricsToggle?.setContent(label());
+          // On a song without lyrics the layout stays the same either way, which
+          // reads as a broken button without a word of explanation.
+          if (IsLyricsAreaHiddenForMissingLyrics()) {
+            ShowFullscreenHint("This song has no lyrics");
+          }
+          // The lyrics were out of layout while hidden; measure and scroll them again.
+          setTimeout(() => {
+            GetCurrentLyricsContainerInstance()?.Resize();
+            QueueForceScroll();
+          }, 10);
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Lyrics Toggle tooltip", err);
       }
     }
 

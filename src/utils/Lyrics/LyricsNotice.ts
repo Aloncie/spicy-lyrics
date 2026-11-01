@@ -5,8 +5,9 @@ import { IsCompactMode } from "../../components/Utils/CompactMode.ts";
 import Fullscreen from "../../components/Utils/Fullscreen.ts";
 import { SyncNowBarSide } from "../../components/Utils/NowBar.ts";
 import { IsOpen as IsBreakerOpen, RetryAfterMs } from "../API/CircuitBreaker.ts";
-import { getExperiments, isExperimentEnabled } from "../experiments.ts";
+import { getExperiments, isExperimentEnabled, onExperimentChange } from "../experiments.ts";
 import { $showNoLyricsNotice } from "../stores.ts";
+import { $hideFullscreenLyrics } from "../uiState.ts";
 import { GetLastLyricsFailure } from "./fetchLyrics.ts";
 
 const DISCORD_URL = "https://discord.com/invite/uqgXU5wh8j";
@@ -109,10 +110,39 @@ export function SetShownNotice(descriptor: string | null): void {
   shownNotice = descriptor;
 }
 
+/**
+ * Whether the user hid the lyrics from the fullscreen controls. Compact mode and the
+ * popup keep them: neither has a layout for the song on its own.
+ */
+export function IsFullscreenLyricsHiddenByUser(): boolean {
+  return (
+    !!PageContainer &&
+    !PageContainer.closest(".spicy-pip-wrapper") &&
+    (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) &&
+    !IsCompactMode() &&
+    $hideFullscreenLyrics.get() &&
+    isExperimentEnabled("fullscreenLyricsToggle")
+  );
+}
+
 function shouldHideLyricsArea(): boolean {
-  if (!shownNotice || !PageContainer) return false;
+  if (!PageContainer) return false;
   // The NPV card has its own switch (Hide When a Song Has No Lyrics), which removes it.
   if (IsCardMode) return false;
+  if (IsFullscreenLyricsHiddenByUser()) return true;
+  return noticeHidesLyricsArea();
+}
+
+/**
+ * Whether the lyrics area is hidden because the song has none, whatever the
+ * fullscreen lyrics toggle says. Showing lyrics then changes nothing on screen.
+ */
+export function IsLyricsAreaHiddenForMissingLyrics(): boolean {
+  return !!PageContainer && !IsCardMode && noticeHidesLyricsArea();
+}
+
+function noticeHidesLyricsArea(): boolean {
+  if (!shownNotice) return false;
   if (!$showNoLyricsNotice.get() && NO_LYRICS_NOTICES.has(shownNotice)) return true;
   // Fullscreen, Cinema View and the popup show the song on its own instead of the
   // notice. Compact mode keeps the notice: the song info is already beside it.
@@ -138,6 +168,10 @@ export function SyncNoLyricsLayout(): void {
 }
 
 $showNoLyricsNotice.listen(() => queueMicrotask(SyncNoLyricsLayout));
+$hideFullscreenLyrics.listen(() => queueMicrotask(SyncNoLyricsLayout));
+onExperimentChange((experiment) => {
+  if (experiment.id === "fullscreenLyricsToggle") queueMicrotask(SyncNoLyricsLayout);
+});
 
 function describeView(): string {
   const parts: string[] = [];

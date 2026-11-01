@@ -1086,3 +1086,49 @@ body.SpicyLyrics_RemoveSpotifyLyricsButton [data-testid="now-playing-bar"] [data
 body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)) {
   display: none !important;
 }
+
+#SpicyLyricsPage:not(.Exp_FullscreenLyricsToggle) .ViewControls #LyricsToggle {
+  display: none !important;
+}
+
+/* Fullscreen hint: a short-lived message under the view controls, on the artwork. */
+#SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_FullscreenHint {
+  position: absolute;
+  top: 18cqh;
+  left: 50%;
+  z-index: 100;
+  max-width: 80cqw;
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  background: rgba(18, 18, 22, 0.62);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 10px 24px -10px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: clamp(12px, 2.6cqw, 15px);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  translate: -50% -0.4em;
+  transition:
+    opacity 260ms ease,
+    translate 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_FullscreenHint.Visible {
+  opacity: 1;
+  translate: -50% 0;
+  transition-duration: 160ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_FullscreenHint {
+    translate: -50% 0;
+  }
+}
