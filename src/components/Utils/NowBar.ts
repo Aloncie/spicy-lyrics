@@ -18,6 +18,10 @@ import Fullscreen, {
 import { IsPIP } from "./PopupLyrics.ts";
 import { ClosePlaylistPicker, TogglePlaylistPicker } from "./PlaylistPicker.ts";
 import { CloseQueuePanel } from "./QueuePanel.ts";
+import {
+  RemoveCurrentRecommendation,
+  SyncRecommendationState,
+} from "./SmartShuffleRecommendation.ts";
 import { IsCompactMode } from "./CompactMode.ts";
 import { Maid } from "../../modules/Maid.ts";
 import Scheduler from "../../modules/Scheduler.ts";
@@ -308,6 +312,11 @@ function OpenNowBar(skipSaving: boolean = false) {
         const ControlsElement = document.createElement("div");
         ControlsElement.classList.add("PlaybackControls");
         ControlsElement.innerHTML = `
+                    ${
+                      IsPIP
+                        ? ""
+                        : `<div class="PlaybackControl RemoveRecommendationControl" id="RemoveRecommendation">${Icons.Dislike}</div>`
+                    }
                     <div class="PlaybackControl ShuffleToggle">
                         ${SpotifyPlayer.ShuffleType === "smart" ? Icons.SmartShuffle : Icons.Shuffle}
                     </div>
@@ -369,6 +378,7 @@ function OpenNowBar(skipSaving: boolean = false) {
         const ShuffleControl = ControlsElement.querySelector(".ShuffleToggle");
         const LoopControl = ControlsElement.querySelector(".LoopToggle");
         const AddToPlaylistControl = ControlsElement.querySelector<HTMLElement>(".AddToPlaylistControl");
+        const RemoveRecommendationControl = ControlsElement.querySelector(".RemoveRecommendationControl");
 
         // Create named handlers for click events
         const playPauseHandler = () => {
@@ -411,6 +421,14 @@ function OpenNowBar(skipSaving: boolean = false) {
           }
         };
 
+        if (RemoveRecommendationControl) {
+          const removeRecommendationHandler = () => RemoveCurrentRecommendation();
+          RemoveRecommendationControl.addEventListener("click", removeRecommendationHandler);
+          controlsMaid.Give(() =>
+            RemoveRecommendationControl.removeEventListener("click", removeRecommendationHandler)
+          );
+          SyncRecommendationState();
+        }
         if (AddToPlaylistControl) {
           const addToPlaylistHandler = () => TogglePlaylistPicker(AddToPlaylistControl);
           AddToPlaylistControl.addEventListener("click", addToPlaylistHandler);

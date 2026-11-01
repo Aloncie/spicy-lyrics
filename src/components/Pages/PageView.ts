@@ -69,10 +69,6 @@ import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
 import { ShowFullscreenHint } from "../Utils/FullscreenHint.ts";
 import { IsLyricsAreaHiddenForMissingLyrics } from "../../utils/Lyrics/LyricsNotice.ts";
-import {
-  RemoveCurrentRecommendation,
-  SyncRecommendationState,
-} from "../Utils/SmartShuffleRecommendation.ts";
 import { CloseQueuePanel, IsQueuePanelOpen, ToggleQueuePanel } from "../Utils/QueuePanel.ts";
 import {
   CloseLyricsTextPanel,
@@ -110,7 +106,6 @@ export const Tooltips: {
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
   LyricsToggle: TippyInstance | null;
-  RemoveRecommendation: TippyInstance | null;
   QueueToggle: TippyInstance | null;
   LyricsTextToggle: TippyInstance | null;
 } = {
@@ -124,7 +119,6 @@ export const Tooltips: {
   LyricsManager: null,
   Settings: null,
   LyricsToggle: null,
-  RemoveRecommendation: null,
   QueueToggle: null,
   LyricsTextToggle: null,
 };
@@ -564,11 +558,6 @@ function AppendViewControls(ReAppend: boolean = false) {
             : ""
         }
         ${
-          (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP
-            ? `<button id="RemoveRecommendation" class="ViewControl">${Icons.Dislike}</button>`
-            : ""
-        }
-        ${
           (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP && !IsCompactMode()
             ? `<button id="QueueToggle" class="ViewControl${
                 IsQueuePanelOpen() ? " Active" : ""
@@ -747,21 +736,6 @@ function AppendViewControls(ReAppend: boolean = false) {
       }
     }
 
-    const removeRecommendationButton = elem.querySelector<HTMLElement>("#RemoveRecommendation");
-    if (removeRecommendationButton && !isPip) {
-      try {
-        Tooltips.RemoveRecommendation = createTooltip(removeRecommendationButton, {
-          ...Spicetify.TippyProps,
-          content: `Remove Recommendation`,
-        });
-        removeRecommendationButton.addEventListener("click", () => {
-          RemoveCurrentRecommendation();
-        });
-      } catch (err) {
-        controlsLogger.warn("Failed to setup Remove Recommendation tooltip", err);
-      }
-    }
-    SyncRecommendationState();
 
     const queueToggle = elem.querySelector<HTMLElement>("#QueueToggle");
     if (queueToggle && !isPip) {
