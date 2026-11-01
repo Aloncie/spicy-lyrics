@@ -16,7 +16,7 @@ import Fullscreen, {
   SetControlsDragLock,
 } from "./Fullscreen.ts";
 import { IsPIP } from "./PopupLyrics.ts";
-import { ClosePlaylistPicker } from "./PlaylistPicker.ts";
+import { ClosePlaylistPicker, TogglePlaylistPicker } from "./PlaylistPicker.ts";
 import { CloseQueuePanel } from "./QueuePanel.ts";
 import { IsCompactMode } from "./CompactMode.ts";
 import { Maid } from "../../modules/Maid.ts";
@@ -321,6 +321,11 @@ function OpenNowBar(skipSaving: boolean = false) {
                     <div class="PlaybackControl LoopToggle">
                         ${SpotifyPlayer.LoopType === "track" ? Icons.LoopTrack : Icons.Loop}
                     </div>
+                    ${
+                      IsPIP
+                        ? ""
+                        : `<div class="PlaybackControl AddToPlaylistControl" id="AddToPlaylist">${Icons.AddToPlaylist}</div>`
+                    }
                 `;
 
         if (SpotifyPlayer.LoopType !== "none") {
@@ -363,6 +368,7 @@ function OpenNowBar(skipSaving: boolean = false) {
         const NextTrackControl = ControlsElement.querySelector(".NextTrack");
         const ShuffleControl = ControlsElement.querySelector(".ShuffleToggle");
         const LoopControl = ControlsElement.querySelector(".LoopToggle");
+        const AddToPlaylistControl = ControlsElement.querySelector<HTMLElement>(".AddToPlaylistControl");
 
         // Create named handlers for click events
         const playPauseHandler = () => {
@@ -405,6 +411,13 @@ function OpenNowBar(skipSaving: boolean = false) {
           }
         };
 
+        if (AddToPlaylistControl) {
+          const addToPlaylistHandler = () => TogglePlaylistPicker(AddToPlaylistControl);
+          AddToPlaylistControl.addEventListener("click", addToPlaylistHandler);
+          controlsMaid.Give(() =>
+            AddToPlaylistControl.removeEventListener("click", addToPlaylistHandler)
+          );
+        }
         if (PlayPauseControl) {
           PlayPauseControl.addEventListener("click", playPauseHandler);
           const el = PlayPauseControl;

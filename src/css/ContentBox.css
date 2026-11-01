@@ -2300,6 +2300,27 @@
   display: none !important;
 }
 
+/* The button sits in the transport row, right of repeat, sized like shuffle and
+   repeat. Its line icon is drawn a little heavier to sit beside their filled glyphs. */
+#SpicyLyricsPage.Fullscreen
+  .ContentBox
+  .NowBar
+  .CenteredView
+  .Header
+  .MediaBox
+  .MediaContent
+  .PlaybackControls
+  .PlaybackControl.AddToPlaylistControl {
+  width: 7cqw;
+  color: #fff;
+}
+
+#SpicyLyricsPage.Fullscreen .PlaybackControls .PlaybackControl.AddToPlaylistControl svg {
+  width: 100%;
+  height: auto;
+  stroke-width: 2.4;
+}
+
 #SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_PlaylistPicker {
   position: absolute;
   top: 18cqh;
