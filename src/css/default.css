@@ -1086,3 +1086,7 @@ body.SpicyLyrics_RemoveSpotifyLyricsButton [data-testid="now-playing-bar"] [data
 body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [data-testid="lyrics-button"]:not(:has(#SpicyLyricsPageSvg)) {
   display: none !important;
 }
+
+#SpicyLyricsPage:not(.Exp_FullscreenLyricsToggle) .ViewControls #LyricsToggle {
+  display: none !important;
+}

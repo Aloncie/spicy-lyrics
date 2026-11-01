@@ -56,6 +56,8 @@ export const $lastFetchedUri = persistAtom<string | null>("lastFetchedUri", null
 export const $previousVersion = persistAtom<string>("previousVersion", "");
 export const $npvLyricsOpen = persistAtom<boolean>("npvLyricsOpen", true);
 export const $npvLyricsExpanded = persistAtom<boolean>("npvLyricsExpanded", false);
+// Lyrics hidden from the fullscreen controls, leaving the song on its own.
+export const $hideFullscreenLyrics = persistAtom<boolean>("hideFullscreenLyrics", false);
 
 // Runtime (ephemeral) atoms
 export const $isGlobalNav = atom<boolean>(true);

@@ -2,9 +2,12 @@ import { createTooltip } from "../../utils/tooltip.ts";
 import fetchLyrics, { ShowQueueLoader } from "../../utils/Lyrics/fetchLyrics.ts";
 import { LyricsQueueRetry } from "../../utils/Lyrics/LyricsQueueRetry.ts";
 import { SkeletonMarkup } from "../../utils/Lyrics/LyricsSkeleton.ts";
-import { $forceCompactMode } from "../../utils/uiState.ts";
+import { $forceCompactMode, $hideFullscreenLyrics } from "../../utils/uiState.ts";
 import "../../css/Loaders/DotLoader.css";
-import { DestroyAllLyricsContainers } from "../../utils/Lyrics/Applyer/CreateLyricsContainer.ts";
+import {
+  DestroyAllLyricsContainers,
+  GetCurrentLyricsContainerInstance,
+} from "../../utils/Lyrics/Applyer/CreateLyricsContainer.ts";
 import ApplyLyrics, {
   cleanupApplyLyricsAbortController,
 } from "../../utils/Lyrics/Global/Applyer.ts";
@@ -17,6 +20,7 @@ import {
 import {
   CleanupScrollEvents,
   InitializeScrollEvents,
+  QueueForceScroll,
   ResetLastLine,
 } from "../../utils/Scrolling/ScrollToActiveLine.ts";
 import {
@@ -93,6 +97,7 @@ export const Tooltips: {
   NowBarSideToggle: TippyInstance | null;
   LyricsManager: TippyInstance | null;
   Settings: TippyInstance | null;
+  LyricsToggle: TippyInstance | null;
 } = {
   Close: null,
   CompactModeToggle: null,
@@ -103,6 +108,7 @@ export const Tooltips: {
   NowBarSideToggle: null,
   LyricsManager: null,
   Settings: null,
+  LyricsToggle: null,
 };
 
 const PageView = {
@@ -532,6 +538,13 @@ function AppendViewControls(ReAppend: boolean = false) {
               }</button>`
             : ""
         }
+        ${
+          (Fullscreen.IsOpen || Fullscreen.CinemaViewOpen) && !IsPIP && !IsCompactMode()
+            ? `<button id="LyricsToggle" class="ViewControl">${
+                $hideFullscreenLyrics.get() ? Icons.ShowLyrics : Icons.HideLyrics
+              }</button>`
+            : ""
+        }
         <button id="RomanizationToggle" class="ViewControl">
           ${
             isRomanized
@@ -666,6 +679,29 @@ function AppendViewControls(ReAppend: boolean = false) {
         });
       } catch (err) {
         controlsLogger.warn("Failed to setup Compact Mode tooltip", err);
+      }
+    }
+
+    const lyricsToggle = elem.querySelector<HTMLElement>("#LyricsToggle");
+    if (lyricsToggle && !isPip) {
+      try {
+        const label = () => ($hideFullscreenLyrics.get() ? "Show Lyrics" : "Hide Lyrics");
+        Tooltips.LyricsToggle = createTooltip(lyricsToggle, {
+          ...Spicetify.TippyProps,
+          content: label(),
+        });
+        lyricsToggle.addEventListener("click", () => {
+          $hideFullscreenLyrics.set(!$hideFullscreenLyrics.get());
+          lyricsToggle.innerHTML = $hideFullscreenLyrics.get() ? Icons.ShowLyrics : Icons.HideLyrics;
+          Tooltips.LyricsToggle?.setContent(label());
+          // The lyrics were out of layout while hidden; measure and scroll them again.
+          setTimeout(() => {
+            GetCurrentLyricsContainerInstance()?.Resize();
+            QueueForceScroll();
+          }, 10);
+        });
+      } catch (err) {
+        controlsLogger.warn("Failed to setup Lyrics Toggle tooltip", err);
       }
     }
 

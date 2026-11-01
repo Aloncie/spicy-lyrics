@@ -158,6 +158,14 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
+  {
+    id: "fullscreenLyricsToggle",
+    label: "Lyrics Toggle in Fullscreen",
+    description:
+      "Adds a button to the fullscreen controls that hides the lyrics and centres the song on its own, the way a song without lyrics is shown, and brings them back. Disable to remove the button and always show the lyrics.",
+    default: true,
+    pageClass: "Exp_FullscreenLyricsToggle",
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
