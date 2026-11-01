@@ -2290,6 +2290,7 @@
 #SpicyLyricsPage .MediaImageContainer .fi_FromImage.MB_anim_fimg::before {
   opacity: 1;
 }
+
 /* --- Add to playlist (fullscreen) ------------------------------------------ */
 /* Drawn over the artwork below the view controls. It lives in .MediaBox, outside
    MediaContent's opacity layer, so the blur reaches the artwork. */
@@ -2466,6 +2467,74 @@
 
 @media (prefers-reduced-motion: reduce) {
   #SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_PlaylistPicker {
+    scale: none;
+  }
+}
+
+/* --- Clearer shuffle/repeat states (experiment) ----------------------------- */
+/* On a bright cover the glow alone doesn't show which toggles are on. Off is dimmed;
+   on keeps the glow and gains a dot underneath. Offsets are fractions of the toggle,
+   whose shape is fixed by the square artwork, so they scale with it. */
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle) {
+  position: relative;
+}
+
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle)
+  > svg {
+  transition:
+    filter 0.175s ease-out,
+    opacity 0.175s ease-out !important;
+}
+
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle):not(.Enabled)
+  > svg {
+  opacity: 0.4;
+}
+
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle):not(.Enabled):hover
+  > svg {
+  opacity: 0.65;
+}
+
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle)::after {
+  content: "";
+  position: absolute;
+  top: 74%;
+  left: 50%;
+  width: 17%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: currentColor;
+  translate: -50% 0;
+  opacity: 0;
+  scale: 0.3;
+  pointer-events: none;
+  transition:
+    opacity 0.175s ease-out,
+    scale 0.175s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+  .PlaybackControls
+  .PlaybackControl:is(.ShuffleToggle, .LoopToggle).Enabled::after {
+  opacity: 1;
+  scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #SpicyLyricsPage.Exp_ClearerToggleStates.Fullscreen
+    .PlaybackControls
+    .PlaybackControl:is(.ShuffleToggle, .LoopToggle)::after {
     scale: none;
   }
 }

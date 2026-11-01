@@ -166,6 +166,29 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_FullscreenAddToPlaylist",
   },
+  {
+    id: "clearerToggleStates",
+    label: "Clearer Shuffle and Repeat States",
+    description:
+      "In fullscreen, shuffle and repeat are dimmed while off and get a dot underneath while on, so their state is readable on any artwork. Disable to go back to telling them apart by the glow alone.",
+    default: true,
+    pageClass: "Exp_ClearerToggleStates",
+  },
+  {
+    id: "fullscreenLyricsToggle",
+    label: "Lyrics Toggle in Fullscreen",
+    description:
+      "Adds a button to the fullscreen controls that hides the lyrics and centres the song on its own, the way a song without lyrics is shown, and brings them back. Disable to remove the button and always show the lyrics.",
+    default: true,
+    pageClass: "Exp_FullscreenLyricsToggle",
+  },
+  {
+    id: "escapeLeavesFullscreen",
+    label: "Escape Leaves Fullscreen Directly",
+    description:
+      "A preference for people who keep Spotify maximised, where Cinema View looks almost the same as fullscreen. Pressing Escape in fullscreen closes the view in one press, as it does in Cinema View, instead of first dropping to Cinema View. Disable to keep the two-step behaviour.",
+    default: false,
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
