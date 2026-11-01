@@ -170,6 +170,10 @@ export const Icons = {
   HideLyrics: Line(
     `<g opacity=".4"><path d="M4 6.5h16"/><path d="M4 12h16"/><path d="M4 17.5h10"/></g><path d="m4.5 4.5 15 15"/>`
   ),
+  // Thumb pointing down: tell smart shuffle not to recommend this track.
+  Dislike: Line(
+    `<path d="M7 14H4.5A1.5 1.5 0 0 1 3 12.5v-8A1.5 1.5 0 0 1 4.5 3H7"/><path d="M7 14V3h9.4a2 2 0 0 1 1.97 1.66l1.2 7A2 2 0 0 1 17.6 14H14l.75 3.4a2.3 2.3 0 0 1-2.25 2.8L7 14Z"/>`
+  ),
   // Compact layout: small cover and title on one row, lyrics underneath.
   EnableCompactModeIcon: Line(
     `<rect x="3.5" y="4.5" width="6" height="6" rx="1.5"/><path d="M13 5.75h7.5"/><path d="M13 9.25h4.5"/><path d="M3.5 15h17"/><path d="M3.5 19.5h11"/>`

@@ -1132,3 +1132,9 @@ body.SpicyLyrics_RemoveSpotifyLyricsButton .main-nowPlayingBar-extraControls > [
     translate: -50% 0;
   }
 }
+
+/* Shown only while smart shuffle plays one of its recommendations. */
+#SpicyLyricsPage:not(.Exp_FullscreenRemoveRecommendation) .ViewControls #RemoveRecommendation,
+#SpicyLyricsPage:not(.SL_SmartShuffleRecommendation) .ViewControls #RemoveRecommendation {
+  display: none !important;
+}
