@@ -4,6 +4,8 @@ This is an unofficial fork of [Spicy Lyrics](https://github.com/Spikerko/spicy-l
 
 > [!NOTE]
 > **I don't write the code myself.** The changes in this fork are made with an AI coding agent (Claude Code); I decide what to change, test the results in my own Spotify, and maintain the fork. Keep that in mind when you use it or read the code.
+>
+> I mainly add what I need myself. Suggestions are welcome as issues, but I may decline ones I wouldn't use, since every extra feature is more to keep working after updates.
 
 > [!IMPORTANT]
 > This fork is not supported by the Spicy Lyrics team. If something breaks here, please [open an issue in this fork](https://github.com/Aloncie/spicy-lyrics/issues), not in the Spicy Lyrics Discord.
