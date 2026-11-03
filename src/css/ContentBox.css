@@ -2490,6 +2490,102 @@
   text-align: center;
 }
 
+/* Membership rows (playlistMembership experiment): a check on the right shows whether the
+   track is in the playlist, and the row toggles it. Only these rows have the elements below. */
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Section {
+  padding: 0.75em 0.4em 0.25em;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Section:first-child {
+  padding-top: 0.2em;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Main .SL_PP_Name {
+  flex: none;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Meta {
+  font-size: 0.8em;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Meta:empty {
+  display: none;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_ArtLiked {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4a22f0, #9d8cff);
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_ArtLiked svg {
+  width: 46%;
+  height: 46%;
+  fill: #fff;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  box-sizing: border-box;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Check svg {
+  width: 0.8em;
+  height: 0.8em;
+  fill: #000;
+  opacity: 0;
+  scale: 0.5;
+  transition:
+    opacity 140ms ease,
+    scale 140ms ease;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Item:hover .SL_PP_Check {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Item[data-checked="true"] .SL_PP_Check {
+  background: #1ed760;
+  border-color: #1ed760;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Item[data-checked="true"] .SL_PP_Check svg {
+  opacity: 1;
+  scale: 1;
+}
+
+#SpicyLyricsPage .SL_PlaylistPicker .SL_PP_Item[data-state="busy"] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   #SpicyLyricsPage .ContentBox .NowBar .Header .MediaBox .SL_PlaylistPicker {
     scale: none;

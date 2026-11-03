@@ -166,6 +166,13 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_FullscreenAddToPlaylist",
   },
+  {
+    id: "playlistMembership",
+    label: "Playlist Picker Shows What's Saved",
+    description:
+      "In the fullscreen playlist picker, playlists that already hold the current track get a check, Liked Songs is listed too, and clicking a row adds or removes the track without closing the list. Disable to go back to a click that adds the track and closes the list.",
+    default: true,
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
