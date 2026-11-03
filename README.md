@@ -25,7 +25,7 @@ All of these live in **Settings → Experiments**, so each one can be turned off
 | Clearer shuffle/repeat | In fullscreen, shuffle and repeat are dimmed while off and get a dot while on, so you can tell them apart on any cover. | [`style/fullscreen-toggle-states`](https://github.com/Aloncie/spicy-lyrics/tree/style/fullscreen-toggle-states) |
 | Escape leaves fullscreen *(personal preference, off by default)* | One Escape closes fullscreen instead of dropping to Cinema View first. Useful if you keep Spotify maximised. | [`personal/esc-exits-fullscreen`](https://github.com/Aloncie/spicy-lyrics/tree/personal/esc-exits-fullscreen) |
 
-Each change also has its own branch based on the original code, in case the Spicy Lyrics team wants to take one.
+Each change also has its own branch based on the original code. Features and fixes the Spicy Lyrics team is open to, I send to the main project as pull requests, so everyone gets them there. The rest stay here for personal use.
 
 ## Install the fork
 
