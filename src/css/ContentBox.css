@@ -3041,8 +3041,9 @@
 
 /* --- Compact mode header: names only, or lyrics only --------------------------- */
 /* Not in Popup Lyrics: its media box holds the playback dock, not the cover.
-   The cover box stays where it was, invisible, so the pointer over it brings the
-   cover and its playback controls back. */
+   The artwork never shows in these modes. The box stays where it was, invisible,
+   so the pointer over it brings the playback controls and the view controls (the
+   way out of compact mode) back, without the picture. */
 #SpicyLyricsPage:is(.CompactHeaderNames, .CompactHeaderNone):is(.CompactMode, .ForcedCompactMode):not(.spicy-pip-wrapper #SpicyLyricsPage)
   .ContentBox
   .NowBar
@@ -3058,6 +3059,15 @@
   .Header
   .MediaBox:hover {
   opacity: 1;
+}
+
+#SpicyLyricsPage:is(.CompactHeaderNames, .CompactHeaderNone):is(.CompactMode, .ForcedCompactMode):not(.spicy-pip-wrapper #SpicyLyricsPage)
+  .ContentBox
+  .NowBar
+  .Header
+  .MediaBox
+  .MediaImageContainer {
+  opacity: 0 !important;
 }
 
 /* Names only: they move to the lyrics' edge. They are inset and faded in at their
@@ -3093,7 +3103,7 @@
 
 /* The names sit over the invisible cover box, so their links must win the pointer
    there. The metadata lets everything through except the links themselves; while
-   the pointer is over the cover box, the names fade and step aside so the cover's
+   the pointer is over the cover box, the names fade and step aside so the
    controls can be reached. */
 #SpicyLyricsPage.CompactHeaderNames:is(.CompactMode, .ForcedCompactMode):not(.spicy-pip-wrapper #SpicyLyricsPage)
   .ContentBox
