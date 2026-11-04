@@ -1180,7 +1180,12 @@ async function main() {
     appLogger.error("The Up next card failed to start", err);
   }
 
-  initNPVHiddenSections();
+  // Added pieces must never stop the rest of Spicy from starting.
+  try {
+    initNPVHiddenSections();
+  } catch (err) {
+    appLogger.error("The sidebar block switches failed to start", err);
+  }
 
   Hometinue();
 
