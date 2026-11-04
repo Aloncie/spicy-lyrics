@@ -3,6 +3,7 @@ import Whentil from "../../modules/Whentil.ts";
 import Logger from "../../utils/Logger.ts";
 import { $experiment, isExperimentEnabled } from "../../utils/experiments.ts";
 import {
+  $npvUpNextCollapsed,
   $npvUpNextCount,
   $npvUpNextTab,
   NPV_UP_NEXT_COUNTS,
@@ -73,6 +74,8 @@ let started = false;
 const DOTS_ICON = `<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg>`;
 const CHEVRON_ICON = `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path fill="currentColor" d="M5.7 3.3a.75.75 0 0 0 0 1.06L9.34 8 5.7 11.64a.75.75 0 1 0 1.06 1.06l4.17-4.17a.75.75 0 0 0 0-1.06L6.76 3.3a.75.75 0 0 0-1.06 0z"/></svg>`;
 const BACK_ICON = `<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path fill="currentColor" d="M10.3 3.3a.75.75 0 0 1 0 1.06L6.66 8l3.64 3.64a.75.75 0 1 1-1.06 1.06L5.07 8.53a.75.75 0 0 1 0-1.06l4.17-4.17a.75.75 0 0 1 1.06 0z"/></svg>`;
+const CHEVRON_DOWN_ICON = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M3.5 6l4.5 4.5L12.5 6"/></svg>`;
+const CLEAR_ICON = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2.5 4.5h11M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M4 4.5l.6 8.2a1 1 0 0 0 1 .8h4.8a1 1 0 0 0 1-.8l.6-8.2M6.7 7v4M9.3 7v4"/></svg>`;
 const CHECK_ICON = `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M13.985 2.383L5.127 12.754 1.388 8.375l-.658.563 4.397 5.149 9.514-11.139z"/></svg>`;
 
 function imageUrl(track: QueueTrack): string | undefined {
@@ -215,6 +218,22 @@ async function changeQueue(entry: Entry) {
   } catch (err) {
     upNextLogger.error("Failed to change the queue", err);
     notify("Couldn't change the queue", true);
+  }
+}
+
+/** Drops the tracks added by hand; what the playing context has coming up stays. */
+async function clearQueue() {
+  try {
+    const queue = await Spicetify.Platform.PlayerAPI.getQueue();
+    const queued = ((queue?.queued ?? []) as QueueTrack[]).filter((t) => t.uri);
+    if (!queued.length) return;
+    await Spicetify.removeFromQueue(
+      queued.map((t) => ({ uri: t.uri, uid: t.uid })) as Spicetify.ContextTrack[]
+    );
+    notify("Queue cleared");
+  } catch (err) {
+    upNextLogger.error("Failed to clear the queue", err);
+    notify("Couldn't clear the queue", true);
   }
 }
 
@@ -590,19 +609,39 @@ function buildCard(): HTMLElement {
         <button type="button" class="SL_UN_Tab" role="tab" data-tab="next">Up next</button>
         <button type="button" class="SL_UN_Tab" role="tab" data-tab="recent">Recently played</button>
       </div>
-      <button type="button" class="SL_UN_Gear" aria-label="Up next settings" aria-haspopup="menu" aria-expanded="false">${Icons.Settings}</button>
+      <div class="SL_UN_Actions">
+        <button type="button" class="SL_UN_Clear" aria-label="Clear queue" title="Clear queue" hidden>${CLEAR_ICON}</button>
+        <button type="button" class="SL_UN_Gear" aria-label="Up next settings" aria-haspopup="menu" aria-expanded="false">${Icons.Settings}</button>
+        <button type="button" class="SL_UN_Fold" aria-label="Collapse" aria-expanded="true">${CHEVRON_DOWN_ICON}</button>
+      </div>
     </div>
     <ul class="SL_UN_List" role="list"></ul>
   `;
   const gear = el.querySelector<HTMLButtonElement>(".SL_UN_Gear");
   gear?.addEventListener("click", () => openMenu(gear, settingsMenu));
+  el.querySelector<HTMLButtonElement>(".SL_UN_Clear")?.addEventListener("click", () => {
+    void clearQueue();
+  });
+  el.querySelector<HTMLButtonElement>(".SL_UN_Fold")?.addEventListener("click", () => {
+    closeMenu();
+    $npvUpNextCollapsed.set(!$npvUpNextCollapsed.get());
+  });
   el.querySelectorAll<HTMLButtonElement>(".SL_UN_Tab").forEach((button) =>
     button.addEventListener("click", () => {
       $npvUpNextTab.set(button.dataset.tab === "recent" ? "recent" : "next");
     })
   );
   syncTabs(el);
+  syncCollapsed(el);
   return el;
+}
+
+function syncCollapsed(el: HTMLElement) {
+  const collapsed = $npvUpNextCollapsed.get();
+  el.classList.toggle("SL_Collapsed", collapsed);
+  const fold = el.querySelector<HTMLButtonElement>(".SL_UN_Fold");
+  fold?.setAttribute("aria-expanded", String(!collapsed));
+  fold?.setAttribute("aria-label", collapsed ? "Expand" : "Collapse");
 }
 
 function syncTabs(el: HTMLElement) {
@@ -667,18 +706,24 @@ function rowFor(entry: Entry): HTMLElement {
   return li;
 }
 
-async function loadEntries(tab: "next" | "recent", count: number): Promise<Entry[]> {
+async function loadEntries(
+  tab: "next" | "recent",
+  count: number
+): Promise<{ entries: Entry[]; queuedCount: number }> {
   if (tab === "recent") {
     const history = await Spicetify.Platform.PlayHistoryAPI.getContents();
-    return ((history?.items ?? []) as QueueTrack[])
+    const entries = ((history?.items ?? []) as QueueTrack[])
       .slice(0, count)
       .map((track) => ({ track, source: "recent" as const }));
+    return { entries, queuedCount: 0 };
   }
   const queue = await Spicetify.Platform.PlayerAPI.getQueue();
-  return [
-    ...((queue?.queued ?? []) as QueueTrack[]).map((track) => ({ track, source: "queued" as const })),
+  const queued = (queue?.queued ?? []) as QueueTrack[];
+  const entries = [
+    ...queued.map((track) => ({ track, source: "queued" as const })),
     ...((queue?.nextUp ?? []) as QueueTrack[]).map((track) => ({ track, source: "next" as const })),
   ].slice(0, count);
+  return { entries, queuedCount: queued.length };
 }
 
 function note(text: string): HTMLElement {
@@ -696,8 +741,11 @@ async function render() {
   const tab = $npvUpNextTab.get();
   syncTabs(el);
   try {
-    const entries = await loadEntries(tab, clampUpNextCount($npvUpNextCount.get()));
+    const { entries, queuedCount } = await loadEntries(tab, clampUpNextCount($npvUpNextCount.get()));
     if (token !== renderToken || card !== el) return;
+    // Only worth offering while there is something added by hand to clear.
+    const clear = el.querySelector<HTMLButtonElement>(".SL_UN_Clear");
+    if (clear) clear.hidden = !(tab === "next" && queuedCount > 0);
     if (!entries.length) {
       list.replaceChildren(
         note(tab === "recent" ? "Nothing played recently" : "Nothing else is coming up")
@@ -708,6 +756,8 @@ async function render() {
   } catch (err) {
     upNextLogger.error("Failed to load the list", err);
     if (token === renderToken && card === el) {
+      const clear = el.querySelector<HTMLButtonElement>(".SL_UN_Clear");
+      if (clear) clear.hidden = true;
       list.replaceChildren(
         note(tab === "recent" ? "Couldn't load recently played" : "Couldn't load the queue")
       );
@@ -804,6 +854,9 @@ export function initNPVUpNext(): void {
   $experiment("npvUpNext").listen(() => schedule());
   $npvUpNextCount.listen(() => onQueueChanged());
   $npvUpNextTab.listen(() => onQueueChanged());
+  $npvUpNextCollapsed.listen(() => {
+    if (card) syncCollapsed(card);
+  });
 
   Global.Event.listen("playback:songchange", onQueueChanged);
   for (const name of ["platform:history", "page:open", "page:destroy", "fullscreen:open", "fullscreen:exit"]) {
