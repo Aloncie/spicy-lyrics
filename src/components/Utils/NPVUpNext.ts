@@ -633,6 +633,8 @@ function buildCard(): HTMLElement {
   );
   syncTabs(el);
   syncCollapsed(el);
+  // Right the first time: only the Up next tab has anything to clear.
+  syncClear(el, $npvUpNextTab.get() === "next", 0);
   return el;
 }
 
