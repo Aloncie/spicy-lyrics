@@ -96,7 +96,12 @@ body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
   display: none;
 }
 
-.SL_UpNext .SL_UN_Clear:hover,
+.SL_UpNext .SL_UN_Clear:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.SL_UpNext .SL_UN_Clear:hover:not(:disabled),
 .SL_UpNext .SL_UN_Fold:hover {
   color: var(--text-base, #fff);
   background: rgba(255, 255, 255, 0.1);
