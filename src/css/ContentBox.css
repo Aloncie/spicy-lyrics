@@ -2317,3 +2317,25 @@
   .MediaBox:hover {
   opacity: 1;
 }
+
+/* The names are inset and faded in at their left edge for the gap beside the cover;
+   with no cover that inset would push them off the lyrics' edge. */
+#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .Header
+  .Metadata
+  :is(.SongName, .Artists) {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.75cqw), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.75cqw), transparent 100%);
+}
+
+#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .Header
+  .Metadata
+  :is(.SongName, .Artists)
+  span {
+  padding-left: 0;
+}
