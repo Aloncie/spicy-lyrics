@@ -135,7 +135,7 @@ const groups: GroupDef[] = [
         id: "npvUpNextCount",
         label: "Up Next Tracks",
         description:
-          "How many upcoming tracks the Up next card in the sidebar shows. The gear on the card changes it too.",
+          "How many tracks the Up next card in the sidebar shows, upcoming or recently played. The gear on the card changes it too.",
         keywords: "queue next sidebar now playing view",
         useDisabled: () =>
           !useStore($experiment("npvUpNext")) &&
