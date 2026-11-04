@@ -1170,7 +1170,12 @@ async function main() {
 
   initNPVLyrics();
 
-  initNPVHiddenSections();
+  // Added pieces must never stop the rest of Spicy from starting.
+  try {
+    initNPVHiddenSections();
+  } catch (err) {
+    appLogger.error("The sidebar block switches failed to start", err);
+  }
 
   Hometinue();
 
