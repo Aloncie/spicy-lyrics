@@ -220,6 +220,14 @@ export const EXPERIMENTS = [
       "In the fullscreen playlist picker, playlists that already hold the current track get a check, Liked Songs is listed too, and clicking a row adds or removes the track without closing the list. Disable to go back to a click that adds the track and closes the list.",
     default: true,
   },
+  {
+    id: "fullscreenClock",
+    label: "Clock in Fullscreen",
+    description:
+      "Shows the time at the top centre of the fullscreen view, in colours taken from the current cover, with the date underneath. Disable to hide it.",
+    default: true,
+    pageClass: "Exp_FullscreenClock",
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
