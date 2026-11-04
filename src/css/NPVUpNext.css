@@ -1,0 +1,300 @@
+/* The "Up next" card in the Now Playing sidebar (NPVUpNext.ts) and its menus. The card
+   reuses Spotify's section classes, so it takes the sidebar's own spacing and look. */
+
+/* Spotify's own "Next in queue" block steps aside while the card is in the sidebar. */
+body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
+  display: none !important;
+}
+
+.main-nowPlayingView-section.SL_UpNext .main-nowPlayingView-sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.SL_UpNext .SL_UN_Gear,
+.SL_UpNext .SL_UN_More {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-subdued, rgba(255, 255, 255, 0.7));
+  cursor: pointer;
+  transition: color 120ms ease, background-color 120ms ease, opacity 120ms ease;
+}
+
+.SL_UpNext .SL_UN_Gear svg {
+  width: 18px;
+  height: 18px;
+}
+
+.SL_UpNext .SL_UN_Gear:hover,
+.SL_UpNext .SL_UN_More:hover,
+.SL_UpNext .SL_UN_Gear[aria-expanded="true"],
+.SL_UpNext .SL_UN_More[aria-expanded="true"] {
+  color: var(--text-base, #fff);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.SL_UpNext .SL_UN_Gear:focus-visible,
+.SL_UpNext .SL_UN_More:focus-visible,
+.SL_UpNext .SL_UN_Play:focus-visible {
+  outline: 2px solid var(--text-base, #fff);
+  outline-offset: -2px;
+}
+
+.SL_UpNext .SL_UN_List {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.SL_UpNext .SL_UN_Item {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color 120ms ease;
+}
+
+.SL_UpNext .SL_UN_Item:hover,
+.SL_UpNext .SL_UN_Item:focus-within {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.SL_UpNext .SL_UN_Play {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px 6px 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.SL_UpNext .SL_UN_Art {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.SL_UpNext .SL_UN_Art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.SL_UpNext .SL_UN_Text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.SL_UpNext .SL_UN_Title,
+.SL_UpNext .SL_UN_Artists {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.SL_UpNext .SL_UN_Title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--text-base, #fff);
+}
+
+.SL_UpNext .SL_UN_Artists {
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--text-subdued, rgba(255, 255, 255, 0.7));
+}
+
+/* The menu button only shows while the row is pointed at, focused, or its menu is open. */
+.SL_UpNext .SL_UN_More {
+  margin-right: 4px;
+  opacity: 0;
+}
+
+.SL_UpNext .SL_UN_Item:hover .SL_UN_More,
+.SL_UpNext .SL_UN_Item:focus-within .SL_UN_More,
+.SL_UpNext .SL_UN_More[aria-expanded="true"] {
+  opacity: 1;
+}
+
+.SL_UpNext .SL_UN_Empty {
+  padding: 8px 6px 12px;
+  font-size: 13px;
+  color: var(--text-subdued, rgba(255, 255, 255, 0.7));
+}
+
+/* --- Menu ------------------------------------------------------------------- */
+/* Lives on <body>, outside the sidebar, so it can sit over the page. */
+.SL_UN_Menu {
+  position: fixed;
+  z-index: 100000;
+  box-sizing: border-box;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: min(440px, calc(100vh - 16px));
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(36, 36, 38, 0.96);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.SL_UN_Menu .SL_UN_MenuHeader {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 4px;
+}
+
+.SL_UN_Menu .SL_UN_MenuBack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.SL_UN_Menu .SL_UN_MenuBack:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.SL_UN_Menu .SL_UN_MenuTitle {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+.SL_UN_Menu .SL_UN_MenuFilter {
+  flex: none;
+  box-sizing: border-box;
+  width: calc(100% - 8px);
+  margin: 2px 4px 6px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.SL_UN_Menu .SL_UN_MenuFilter:focus-visible {
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4);
+}
+
+.SL_UN_Menu .SL_UN_MenuList {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.SL_UN_Menu .SL_UN_MenuItem {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.SL_UN_Menu .SL_UN_MenuItem[hidden] {
+  display: none;
+}
+
+.SL_UN_Menu .SL_UN_MenuItem:hover:not(:disabled),
+.SL_UN_Menu .SL_UN_MenuItem:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.SL_UN_Menu .SL_UN_MenuItem:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.SL_UN_Menu .SL_UN_MenuLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.SL_UN_Menu .SL_UN_MenuCheck,
+.SL_UN_Menu .SL_UN_MenuArrow {
+  flex: none;
+  display: inline-flex;
+  opacity: 0.8;
+}
+
+.SL_UN_Menu .SL_UN_MenuSep {
+  height: 1px;
+  margin: 4px 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.SL_UN_Menu .SL_UN_MenuNote {
+  padding: 10px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .SL_UpNext .SL_UN_Gear,
+  .SL_UpNext .SL_UN_More,
+  .SL_UpNext .SL_UN_Item {
+    transition: none;
+  }
+}

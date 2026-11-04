@@ -158,6 +158,13 @@ export const EXPERIMENTS = [
     default: true,
     pageClass: "Exp_KeepOverlappingLines",
   },
+  {
+    id: "npvUpNext",
+    label: "Up Next in the Sidebar",
+    description:
+      "Replaces Spotify's \"Next in queue\" block in the Now Playing sidebar with an Up next card that shows several upcoming tracks (5 by default; change it from the gear on the card or in Settings → Interface), each with a menu for adding it to a playlist, liking it, removing it from the queue and more. Disable to bring Spotify's block back.",
+    default: true,
+  },
 ] as const satisfies readonly Experiment[];
 
 /** A registry entry, narrowed to its literal `id`. */
