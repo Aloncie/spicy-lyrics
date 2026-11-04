@@ -67,13 +67,20 @@ function update() {
 
   if (page.classList.contains(PEEK_CLASS)) {
     // Open: it stays open over the zone it was opened from and over the box itself.
+    // By position rather than :hover, so a lagging hover state can't keep it open.
     const inZone =
       zone !== null &&
       pointerX >= zone.left &&
       pointerX <= zone.right &&
       pointerY >= 0 &&
       pointerY <= zone.bottom;
-    if (!inZone && !box.matches(":hover")) {
+    const rect = box.getBoundingClientRect();
+    const inBox =
+      pointerX >= rect.left &&
+      pointerX <= rect.right &&
+      pointerY >= rect.top &&
+      pointerY <= rect.bottom;
+    if (!inZone && !inBox) {
       page.classList.remove(PEEK_CLASS);
       zone = null;
     }
