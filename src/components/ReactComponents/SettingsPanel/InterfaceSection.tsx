@@ -1,7 +1,7 @@
 import { useStore } from "@nanostores/react";
 import {
+  $compactHeader,
   $disableNpvLyrics,
-  $hideCompactCover,
   $hideNpvLyricsWhenUnavailable,
   $lockedMediaBox,
   $popupLyricsAllowed,
@@ -10,6 +10,8 @@ import {
   $showVolumeSlider,
   $timelineOutsideMediaContent,
   $viewControlsPosition,
+  COMPACT_HEADERS,
+  type CompactHeader,
 } from "../../../utils/stores.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { Select, Toggle } from "./components.tsx";
@@ -93,16 +95,18 @@ const groups: GroupDef[] = [
         ),
       },
       {
-        id: "hideCompactCover",
-        label: "Hide Cover in Compact Mode",
+        id: "compactHeader",
+        label: "Compact Mode Header",
         description:
-          "Compact mode shows only the song and artist names beside the lyrics. Move the pointer to where the cover was to bring it, and its playback controls, back.",
-        keywords: "compact album art artwork image",
+          "What compact mode shows above the lyrics. Cover and names is the usual look. Names only drops the cover; Lyrics only drops the names too. With the cover hidden, move the pointer to where it was to bring it, and its playback controls, back.",
+        keywords: "compact album art artwork cover image title artist name hide",
         Control: ({ label }) => (
-          <Toggle
+          <Select
             label={label}
-            checked={useStore($hideCompactCover)}
-            onChange={(v) => $hideCompactCover.set(v)}
+            value={useStore($compactHeader)}
+            options={[...COMPACT_HEADERS]}
+            labels={["Cover and names", "Names only", "Lyrics only"]}
+            onChange={(v) => $compactHeader.set(v as CompactHeader)}
           />
         ),
       },

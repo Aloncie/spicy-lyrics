@@ -2290,18 +2290,10 @@
 #SpicyLyricsPage .MediaImageContainer .fi_FromImage.MB_anim_fimg::before {
   opacity: 1;
 }
-/* --- Compact mode without the cover ------------------------------------------ */
-/* The names move to the lyrics' edge. The cover box stays where it was, invisible,
-   so the pointer over it brings the cover and its playback controls back. */
-#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
-  .ContentBox
-  .NowBar
-  .CenteredView
-  .Header {
-  --MetadataLeftSidePadding: 0px;
-}
-
-#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+/* --- Compact mode header: names only, or lyrics only --------------------------- */
+/* The cover box stays where it was, invisible, so the pointer over it brings the
+   cover and its playback controls back. */
+#SpicyLyricsPage:is(.CompactHeaderNames, .CompactHeaderNone):is(.CompactMode, .ForcedCompactMode)
   .ContentBox
   .NowBar
   .Header
@@ -2310,7 +2302,7 @@
   transition: opacity 0.2s;
 }
 
-#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+#SpicyLyricsPage:is(.CompactHeaderNames, .CompactHeaderNone):is(.CompactMode, .ForcedCompactMode)
   .ContentBox
   .NowBar
   .Header
@@ -2318,9 +2310,18 @@
   opacity: 1;
 }
 
-/* The names are inset and faded in at their left edge for the gap beside the cover;
-   with no cover that inset would push them off the lyrics' edge. */
-#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+/* Names only: they move to the lyrics' edge. They are inset and faded in at their
+   left edge for the gap beside the cover; with no cover that inset would push them
+   off the lyrics' edge. */
+#SpicyLyricsPage.CompactHeaderNames:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .CenteredView
+  .Header {
+  --MetadataLeftSidePadding: 0px;
+}
+
+#SpicyLyricsPage.CompactHeaderNames:is(.CompactMode, .ForcedCompactMode)
   .ContentBox
   .NowBar
   .Header
@@ -2330,7 +2331,7 @@
   mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3.75cqw), transparent 100%);
 }
 
-#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+#SpicyLyricsPage.CompactHeaderNames:is(.CompactMode, .ForcedCompactMode)
   .ContentBox
   .NowBar
   .Header
@@ -2338,4 +2339,13 @@
   :is(.SongName, .Artists)
   span {
   padding-left: 0;
+}
+
+/* Lyrics only: the names go too. */
+#SpicyLyricsPage.CompactHeaderNone:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .Header
+  .Metadata {
+  display: none;
 }
