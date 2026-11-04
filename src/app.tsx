@@ -1173,7 +1173,12 @@ async function main() {
   );
 
   initNPVLyrics();
-  initNPVUpNext();
+  // Added pieces must never stop the rest of Spicy from starting.
+  try {
+    initNPVUpNext();
+  } catch (err) {
+    appLogger.error("The Up next card failed to start", err);
+  }
 
   initNPVHiddenSections();
 
