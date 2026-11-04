@@ -4,6 +4,7 @@ import Logger from "../../utils/Logger.ts";
 import { $experiment, isExperimentEnabled } from "../../utils/experiments.ts";
 import {
   $npvUpNextCount,
+  $npvUpNextTab,
   NPV_UP_NEXT_COUNTS,
   clampUpNextCount,
 } from "../../utils/npvSidebarSettings.ts";
@@ -13,9 +14,9 @@ import { GetNPVElement, GetNPVObserverRoot } from "./NPVLyrics.ts";
 
 /*
  * An "Up next" card for the Now Playing sidebar, in place of Spotify's "Next in
- * queue" block: several upcoming tracks (5 by default), each with a "..." menu
- * for the things Spotify's own track menu does that can be done from here. The
- * gear on the card picks how many tracks it shows.
+ * queue" block: several upcoming tracks (5 by default), or the ones that played
+ * just before, each with a "..." menu for the things Spotify's own track menu does
+ * that can be done from here. The gear on the card picks how many tracks it shows.
  *
  * Spotify's own track menu can't be reused: it only works inside Spotify's own
  * React tree, so this menu is built here from the same player and library calls.
@@ -38,7 +39,7 @@ type QueueTrack = {
   images?: Image[];
   album?: { uri?: string; name?: string; images?: Image[] };
 };
-type Entry = { track: QueueTrack; source: "queued" | "next" };
+type Entry = { track: QueueTrack; source: "queued" | "next" | "recent" };
 
 type MenuCtx = { show: (view: MenuView) => void; close: () => void };
 type MenuItem = {
@@ -113,6 +114,19 @@ async function copyText(text: string) {
 function skipTo(track: QueueTrack) {
   Spicetify.Platform.PlayerAPI.skipTo({ uri: track.uri, uid: track.uid }).catch((err: unknown) =>
     upNextLogger.error("Failed to skip to track", err)
+  );
+}
+
+/** A track from the history is no longer in the queue, so it starts from its uri. */
+function playTrack(entry: Entry) {
+  const { track } = entry;
+  if (entry.source !== "recent") {
+    skipTo(track);
+    return;
+  }
+  if (!track.uri) return;
+  Promise.resolve(Spicetify.Player.playUri(track.uri)).catch((err: unknown) =>
+    upNextLogger.error("Failed to play track", err)
   );
 }
 
@@ -572,16 +586,33 @@ function buildCard(): HTMLElement {
   el.className = `main-nowPlayingView-section ${CARD_CLASS}`;
   el.innerHTML = `
     <div class="main-nowPlayingView-sectionHeader">
-      <h2 class="encore-text-body-medium-bold encore-internal-color-text-base">
-        <div class="main-nowPlayingView-sectionHeaderText">Up next</div>
-      </h2>
+      <div class="SL_UN_Tabs" role="tablist" aria-label="Queue">
+        <button type="button" class="SL_UN_Tab" role="tab" data-tab="next">Up next</button>
+        <button type="button" class="SL_UN_Tab" role="tab" data-tab="recent">Recently played</button>
+      </div>
       <button type="button" class="SL_UN_Gear" aria-label="Up next settings" aria-haspopup="menu" aria-expanded="false">${Icons.Settings}</button>
     </div>
     <ul class="SL_UN_List" role="list"></ul>
   `;
   const gear = el.querySelector<HTMLButtonElement>(".SL_UN_Gear");
   gear?.addEventListener("click", () => openMenu(gear, settingsMenu));
+  el.querySelectorAll<HTMLButtonElement>(".SL_UN_Tab").forEach((button) =>
+    button.addEventListener("click", () => {
+      $npvUpNextTab.set(button.dataset.tab === "recent" ? "recent" : "next");
+    })
+  );
+  syncTabs(el);
   return el;
+}
+
+function syncTabs(el: HTMLElement) {
+  const active = $npvUpNextTab.get();
+  el.querySelectorAll<HTMLButtonElement>(".SL_UN_Tab").forEach((button) => {
+    const on = button.dataset.tab === active;
+    button.classList.toggle("Active", on);
+    button.setAttribute("aria-selected", String(on));
+    button.tabIndex = on ? 0 : -1;
+  });
 }
 
 function rowFor(entry: Entry): HTMLElement {
@@ -595,7 +626,7 @@ function rowFor(entry: Entry): HTMLElement {
   play.type = "button";
   play.className = "SL_UN_Play";
   play.setAttribute("aria-label", `Play ${name}`);
-  play.addEventListener("click", () => skipTo(track));
+  play.addEventListener("click", () => playTrack(entry));
 
   const art = document.createElement("span");
   art.className = "SL_UN_Art";
@@ -636,35 +667,50 @@ function rowFor(entry: Entry): HTMLElement {
   return li;
 }
 
+async function loadEntries(tab: "next" | "recent", count: number): Promise<Entry[]> {
+  if (tab === "recent") {
+    const history = await Spicetify.Platform.PlayHistoryAPI.getContents();
+    return ((history?.items ?? []) as QueueTrack[])
+      .slice(0, count)
+      .map((track) => ({ track, source: "recent" as const }));
+  }
+  const queue = await Spicetify.Platform.PlayerAPI.getQueue();
+  return [
+    ...((queue?.queued ?? []) as QueueTrack[]).map((track) => ({ track, source: "queued" as const })),
+    ...((queue?.nextUp ?? []) as QueueTrack[]).map((track) => ({ track, source: "next" as const })),
+  ].slice(0, count);
+}
+
+function note(text: string): HTMLElement {
+  const el = document.createElement("li");
+  el.className = "SL_UN_Empty";
+  el.textContent = text;
+  return el;
+}
+
 async function render() {
   const el = card;
   const list = el?.querySelector<HTMLElement>(".SL_UN_List");
   if (!el || !list) return;
   const token = ++renderToken;
+  const tab = $npvUpNextTab.get();
+  syncTabs(el);
   try {
-    const queue = await Spicetify.Platform.PlayerAPI.getQueue();
+    const entries = await loadEntries(tab, clampUpNextCount($npvUpNextCount.get()));
     if (token !== renderToken || card !== el) return;
-    const count = clampUpNextCount($npvUpNextCount.get());
-    const entries: Entry[] = [
-      ...((queue?.queued ?? []) as QueueTrack[]).map((track) => ({ track, source: "queued" as const })),
-      ...((queue?.nextUp ?? []) as QueueTrack[]).map((track) => ({ track, source: "next" as const })),
-    ].slice(0, count);
-
     if (!entries.length) {
-      const note = document.createElement("li");
-      note.className = "SL_UN_Empty";
-      note.textContent = "Nothing else is coming up";
-      list.replaceChildren(note);
+      list.replaceChildren(
+        note(tab === "recent" ? "Nothing played recently" : "Nothing else is coming up")
+      );
       return;
     }
     list.replaceChildren(...entries.map(rowFor));
   } catch (err) {
-    upNextLogger.error("Failed to load the queue", err);
+    upNextLogger.error("Failed to load the list", err);
     if (token === renderToken && card === el) {
-      const note = document.createElement("li");
-      note.className = "SL_UN_Empty";
-      note.textContent = "Couldn't load the queue";
-      list.replaceChildren(note);
+      list.replaceChildren(
+        note(tab === "recent" ? "Couldn't load recently played" : "Couldn't load the queue")
+      );
     }
   }
 }
@@ -757,6 +803,7 @@ export function initNPVUpNext(): void {
 
   $experiment("npvUpNext").listen(() => schedule());
   $npvUpNextCount.listen(() => onQueueChanged());
+  $npvUpNextTab.listen(() => onQueueChanged());
 
   Global.Event.listen("playback:songchange", onQueueChanged);
   for (const name of ["platform:history", "page:open", "page:destroy", "fullscreen:open", "fullscreen:exit"]) {

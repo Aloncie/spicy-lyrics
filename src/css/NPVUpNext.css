@@ -13,6 +13,44 @@ body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
   gap: 8px;
 }
 
+/* The two lists switch like the Queue / Recently played tabs in fullscreen. */
+.SL_UpNext .SL_UN_Tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.SL_UpNext .SL_UN_Tab {
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-subdued, rgba(255, 255, 255, 0.75));
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.SL_UpNext .SL_UN_Tab:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--text-base, #fff);
+}
+
+.SL_UpNext .SL_UN_Tab.Active {
+  background: #fff;
+  color: #000;
+}
+
+.SL_UpNext .SL_UN_Tab:focus-visible {
+  outline: 2px solid var(--text-base, #fff);
+  outline-offset: 2px;
+}
+
 .SL_UpNext .SL_UN_Gear,
 .SL_UpNext .SL_UN_More {
   flex: none;
@@ -292,6 +330,7 @@ body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .SL_UpNext .SL_UN_Tab,
   .SL_UpNext .SL_UN_Gear,
   .SL_UpNext .SL_UN_More,
   .SL_UpNext .SL_UN_Item {
