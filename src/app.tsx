@@ -62,7 +62,7 @@ import { showUpdatedDialog } from "./components/ReactComponents/UpdateDialog.tsx
 import { IsPIP, OpenPopupLyrics, ClosePopupLyrics } from "./components/Utils/PopupLyrics.ts";
 import { GetNPVCardElement, GetNPVElement, GetNPVObserverRoot, initNPVLyrics } from "./components/Utils/NPVLyrics.ts";
 import { initNPVUpNext } from "./components/Utils/NPVUpNext.ts";
-import { $npvHideAboutArtist, $npvHideCredits } from "./utils/npvHiddenSections.ts";
+import { initNPVHiddenSections } from "./components/Utils/NPVHiddenSections.ts";
 import ReactDOM from "react-dom/client";
 import { runThemeMatcher } from "./utils/themeMatcher.ts";
 import { guardSpicetifyScrollingFix } from "./utils/scrollFixGuard.ts";
@@ -1175,11 +1175,7 @@ async function main() {
   initNPVLyrics();
   initNPVUpNext();
 
-  // Plain CSS from here: Spotify re-renders the sidebar freely, a class on <body> survives that.
-  $npvHideCredits.subscribe((hide) => document.body.classList.toggle("SL_NpvHideCredits", hide));
-  $npvHideAboutArtist.subscribe((hide) =>
-    document.body.classList.toggle("SL_NpvHideAboutArtist", hide)
-  );
+  initNPVHiddenSections();
 
   Hometinue();
 

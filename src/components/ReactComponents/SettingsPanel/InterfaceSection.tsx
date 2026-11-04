@@ -37,7 +37,12 @@ import {
   clampUpNextCount,
 } from "../../../utils/npvSidebarSettings.ts";
 import { $experiment, getExperiment } from "../../../utils/experiments.ts";
-import { $npvHideAboutArtist, $npvHideCredits } from "../../../utils/npvHiddenSections.ts";
+import {
+  $npvCollapseMusicVideo,
+  $npvHideAboutArtist,
+  $npvHideCredits,
+  $npvHideOnTour,
+} from "../../../utils/npvHiddenSections.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { Select, Toggle } from "./components.tsx";
 import { InterfaceIcon } from "./icons.tsx";
@@ -211,6 +216,33 @@ const groups: GroupDef[] = [
             label={label}
             checked={useStore($npvHideAboutArtist)}
             onChange={(v) => $npvHideAboutArtist.set(v)}
+          />
+        ),
+      },
+      {
+        id: "npvHideOnTour",
+        label: "Hide On Tour",
+        description: "Remove Spotify's On tour block from the Now Playing sidebar.",
+        keywords: "npv now playing view concerts tickets",
+        Control: ({ label }) => (
+          <Toggle
+            label={label}
+            checked={useStore($npvHideOnTour)}
+            onChange={(v) => $npvHideOnTour.set(v)}
+          />
+        ),
+      },
+      {
+        id: "npvCollapseMusicVideo",
+        label: "Fold Up Music Videos",
+        description:
+          "Shrink Spotify's music video block in the Now Playing sidebar to its title. Click the title to open it; every new song starts folded.",
+        keywords: "npv now playing view related videos",
+        Control: ({ label }) => (
+          <Toggle
+            label={label}
+            checked={useStore($npvCollapseMusicVideo)}
+            onChange={(v) => $npvCollapseMusicVideo.set(v)}
           />
         ),
       },
