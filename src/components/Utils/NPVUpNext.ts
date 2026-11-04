@@ -386,18 +386,23 @@ function openMenu(anchor: HTMLElement, root: () => MenuView) {
     items[next]?.focus();
   };
   const onDismiss = () => closeMenu();
+  // Only the scrolling of whatever holds the row moves it out from under the menu. The
+  // lyrics card in the same sidebar scrolls by itself all song long and must not count.
+  const onScroll = (e: Event) => {
+    const target = e.target;
+    if (target instanceof Node && target.contains(anchor)) closeMenu();
+  };
   document.addEventListener("pointerdown", onPointerDown, true);
   el.addEventListener("keydown", onKeyDown);
   window.addEventListener("resize", onDismiss);
   window.addEventListener("blur", onDismiss);
-  // The sidebar scrolling would leave the menu hanging where the row used to be.
-  document.addEventListener("scroll", onDismiss, true);
+  document.addEventListener("scroll", onScroll, true);
   menuTeardown = () => {
     document.removeEventListener("pointerdown", onPointerDown, true);
     el.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("resize", onDismiss);
     window.removeEventListener("blur", onDismiss);
-    document.removeEventListener("scroll", onDismiss, true);
+    document.removeEventListener("scroll", onScroll, true);
   };
 }
 
