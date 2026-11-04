@@ -2335,3 +2335,19 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.62);
 }
+
+/* Date on its own: bigger, and filled like the time would be. */
+#SpicyLyricsPage .SL_FullscreenClock[data-show="time"] .SL_Clock_Date,
+#SpicyLyricsPage .SL_FullscreenClock[data-show="date"] .SL_Clock_Time {
+  display: none;
+}
+
+#SpicyLyricsPage .SL_FullscreenClock[data-show="date"] .SL_Clock_Date {
+  font-size: clamp(18px, 3.4cqh, 42px);
+  letter-spacing: 0.14em;
+  color: #fff;
+  background-image: var(--SL_ClockGradient, linear-gradient(#fff, #fff));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

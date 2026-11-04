@@ -2,6 +2,12 @@ import Global from "../Global/Global.ts";
 import { PageContainer } from "../Pages/PageView.ts";
 import { SpotifyPlayer } from "../Global/SpotifyPlayer.ts";
 import Logger from "../../utils/Logger.ts";
+import {
+  $clockColours,
+  $clockDateFormat,
+  $clockShow,
+  $clockTimeFormat,
+} from "../../utils/clockSettings.ts";
 
 /*
  * A clock at the top centre of the fullscreen view: the time in the colours of
@@ -16,20 +22,34 @@ let timeNode: HTMLElement | null = null;
 let dateNode: HTMLElement | null = null;
 let tick: ReturnType<typeof setTimeout> | undefined;
 let songChangeId: ReturnType<typeof Global.Event.listen> | undefined;
+let unsubscribeSettings: (() => void)[] = [];
 let colourToken = 0;
 
 const SAMPLE = 24;
 
 function formatTime(now: Date): string {
-  return now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", hour12: false });
+  return now.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: $clockTimeFormat.get() === "12h",
+  });
 }
 
 function formatDate(now: Date): string {
-  return now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  switch ($clockDateFormat.get()) {
+    case "numeric":
+      return now.toLocaleDateString(undefined, { day: "2-digit", month: "2-digit", year: "numeric" });
+    case "long":
+      return now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+    default:
+      return now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  }
 }
 
 function paintTime() {
-  if (!timeNode || !dateNode) return;
+  clearTimeout(tick);
+  if (!clock || !timeNode || !dateNode) return;
+  clock.dataset.show = $clockShow.get();
   const now = new Date();
   timeNode.textContent = formatTime(now);
   dateNode.textContent = formatDate(now);
@@ -122,6 +142,10 @@ function applyColours(colours: Rgb[] | null) {
 
 function updateColours() {
   const token = ++colourToken;
+  if ($clockColours.get() === "white") {
+    applyColours(null);
+    return;
+  }
   const cover = SpotifyPlayer.GetCover("standard") ?? SpotifyPlayer.GetCover("xlarge");
   if (!cover) {
     applyColours(null);
@@ -165,11 +189,19 @@ export function OpenFullscreenClock() {
   paintTime();
   updateColours();
   songChangeId = Global.Event.listen("playback:songchange", updateColours);
+  unsubscribeSettings = [
+    $clockShow.listen(paintTime),
+    $clockTimeFormat.listen(paintTime),
+    $clockDateFormat.listen(paintTime),
+    $clockColours.listen(updateColours),
+  ];
 }
 
 export function CloseFullscreenClock() {
   clearTimeout(tick);
   colourToken++;
+  unsubscribeSettings.forEach((off) => off());
+  unsubscribeSettings = [];
   if (songChangeId !== undefined) {
     Global.Event.unListen(songChangeId);
     songChangeId = undefined;
