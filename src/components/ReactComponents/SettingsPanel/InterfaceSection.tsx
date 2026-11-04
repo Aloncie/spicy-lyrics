@@ -37,6 +37,7 @@ import {
   clampUpNextCount,
 } from "../../../utils/npvSidebarSettings.ts";
 import { $experiment, getExperiment } from "../../../utils/experiments.ts";
+import { $npvHideAboutArtist, $npvHideCredits } from "../../../utils/npvHiddenSections.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { Select, Toggle } from "./components.tsx";
 import { InterfaceIcon } from "./icons.tsx";
@@ -184,6 +185,32 @@ const groups: GroupDef[] = [
             options={NPV_UP_NEXT_COUNTS.map(String)}
             onChange={(v) => $npvUpNextCount.set(Number(v))}
             disabled={disabled}
+          />
+        ),
+      },
+      {
+        id: "npvHideCredits",
+        label: "Hide Credits",
+        description: "Remove Spotify's Credits block from the Now Playing sidebar.",
+        keywords: "npv now playing view songwriters composer",
+        Control: ({ label }) => (
+          <Toggle
+            label={label}
+            checked={useStore($npvHideCredits)}
+            onChange={(v) => $npvHideCredits.set(v)}
+          />
+        ),
+      },
+      {
+        id: "npvHideAboutArtist",
+        label: "Hide About the Artist",
+        description: "Remove Spotify's About the artist block from the Now Playing sidebar.",
+        keywords: "npv now playing view bio biography",
+        Control: ({ label }) => (
+          <Toggle
+            label={label}
+            checked={useStore($npvHideAboutArtist)}
+            onChange={(v) => $npvHideAboutArtist.set(v)}
           />
         ),
       },
