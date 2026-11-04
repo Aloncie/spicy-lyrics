@@ -59,18 +59,26 @@ function paintTime() {
 
 type Rgb = [number, number, number];
 
-/** Brightness and saturation pushed up so a dark cover still gives readable, vivid text. */
+/** Hue kept, saturation and lightness pulled into a band where text on a dark page stays vivid and readable. */
 function lift([r, g, b]: Rgb): string {
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const l = (max + min) / 2 / 255;
-  const s = max === min ? 0 : (max - min) / (255 * (1 - Math.abs(2 * l - 1)));
-  const boost = Math.max(0, 0.78 - l) * 1.6;
-  const mix = (c: number) => Math.round(Math.min(255, c + (255 - c) * boost));
-  const sat = Math.min(1, s + 0.25);
-  const grey = (r + g + b) / 3;
-  const push = (c: number) => Math.round(Math.max(0, Math.min(255, grey + (mix(c) - grey) * (1 + sat))));
-  return `rgb(${push(r)}, ${push(g)}, ${push(b)})`;
+  const rr = r / 255;
+  const gg = g / 255;
+  const bb = b / 255;
+  const max = Math.max(rr, gg, bb);
+  const min = Math.min(rr, gg, bb);
+  const d = max - min;
+  let h = 0;
+  if (d > 0) {
+    if (max === rr) h = ((gg - bb) / d) % 6;
+    else if (max === gg) h = (bb - rr) / d + 2;
+    else h = (rr - gg) / d + 4;
+  }
+  h = Math.round(((h * 60) + 360) % 360);
+  const l = (max + min) / 2;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  const sat = Math.round(Math.max(s, 0.62) * 100);
+  const light = Math.round(Math.min(0.74, Math.max(l, 0.6)) * 100);
+  return `hsl(${h}, ${sat}%, ${light}%)`;
 }
 
 /** The most vivid, mutually different colours of the cover, from a tiny downsample. */
@@ -94,11 +102,12 @@ function pickColours(img: HTMLImageElement): Rgb[] | null {
     const b = data[i + 2];
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    if (max < 40) continue; // near-black
+    if (max < 50) continue; // near-black
     const sat = max === 0 ? 0 : (max - min) / max;
+    if (sat < 0.28) continue; // whites and greys would only wash the gradient out
     const key = ((r >> 5) << 6) | ((g >> 5) << 3) | (b >> 5);
     const cur = buckets.get(key);
-    const score = sat * 0.7 + (max / 255) * 0.3;
+    const score = sat * sat * (0.5 + 0.5 * (max / 255));
     if (cur) {
       cur.n++;
       cur.score += score;
