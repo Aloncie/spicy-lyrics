@@ -1,0 +1,5 @@
+/* Sidebar blocks dropped from Settings → Interface (npvHiddenSections.ts). */
+body.SL_NpvHideCredits .main-nowPlayingView-section.main-nowPlayingView-credits,
+body.SL_NpvHideAboutArtist .main-nowPlayingView-section.main-nowPlayingView-aboutArtist {
+  display: none !important;
+}
