@@ -610,7 +610,7 @@ function buildCard(): HTMLElement {
         <button type="button" class="SL_UN_Tab" role="tab" data-tab="recent">Recently played</button>
       </div>
       <div class="SL_UN_Actions">
-        <button type="button" class="SL_UN_Clear" aria-label="Clear queue" title="Clear queue" hidden>${CLEAR_ICON}</button>
+        <button type="button" class="SL_UN_Clear" aria-label="Clear queue" title="Clear queue" disabled>${CLEAR_ICON}</button>
         <button type="button" class="SL_UN_Gear" aria-label="Up next settings" aria-haspopup="menu" aria-expanded="false">${Icons.Settings}</button>
         <button type="button" class="SL_UN_Fold" aria-label="Collapse" aria-expanded="true">${CHEVRON_DOWN_ICON}</button>
       </div>
@@ -634,6 +634,20 @@ function buildCard(): HTMLElement {
   syncTabs(el);
   syncCollapsed(el);
   return el;
+}
+
+/** Always there on the Up next tab; greyed out, and saying why, when nothing added by hand is queued. */
+function syncClear(el: HTMLElement, visible: boolean, queuedCount: number) {
+  const clear = el.querySelector<HTMLButtonElement>(".SL_UN_Clear");
+  if (!clear) return;
+  clear.hidden = !visible;
+  clear.disabled = queuedCount === 0;
+  const label =
+    queuedCount === 0
+      ? "Clear queue (nothing you added is queued)"
+      : `Clear queue (${queuedCount} you added)`;
+  clear.title = label;
+  clear.setAttribute("aria-label", label);
 }
 
 function syncCollapsed(el: HTMLElement) {
@@ -743,9 +757,7 @@ async function render() {
   try {
     const { entries, queuedCount } = await loadEntries(tab, clampUpNextCount($npvUpNextCount.get()));
     if (token !== renderToken || card !== el) return;
-    // Only worth offering while there is something added by hand to clear.
-    const clear = el.querySelector<HTMLButtonElement>(".SL_UN_Clear");
-    if (clear) clear.hidden = !(tab === "next" && queuedCount > 0);
+    syncClear(el, tab === "next", queuedCount);
     if (!entries.length) {
       list.replaceChildren(
         note(tab === "recent" ? "Nothing played recently" : "Nothing else is coming up")
@@ -756,8 +768,7 @@ async function render() {
   } catch (err) {
     upNextLogger.error("Failed to load the list", err);
     if (token === renderToken && card === el) {
-      const clear = el.querySelector<HTMLButtonElement>(".SL_UN_Clear");
-      if (clear) clear.hidden = true;
+      syncClear(el, false, 0);
       list.replaceChildren(
         note(tab === "recent" ? "Couldn't load recently played" : "Couldn't load the queue")
       );
