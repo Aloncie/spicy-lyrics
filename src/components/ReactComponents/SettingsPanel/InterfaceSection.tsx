@@ -31,6 +31,11 @@ import {
   type ClockShow,
   type ClockTimeFormat,
 } from "../../../utils/clockSettings.ts";
+import {
+  $npvUpNextCount,
+  NPV_UP_NEXT_COUNTS,
+  clampUpNextCount,
+} from "../../../utils/npvSidebarSettings.ts";
 import { $experiment, getExperiment } from "../../../utils/experiments.ts";
 import { $isGlobalNav } from "../../../utils/uiState.ts";
 import { Select, Toggle } from "./components.tsx";
@@ -159,6 +164,25 @@ const groups: GroupDef[] = [
             label={label}
             checked={useStore($hideNpvLyricsWhenUnavailable)}
             onChange={(v) => $hideNpvLyricsWhenUnavailable.set(v)}
+            disabled={disabled}
+          />
+        ),
+      },
+      {
+        id: "npvUpNextCount",
+        label: "Up Next Tracks",
+        description:
+          "How many upcoming tracks the Up next card in the sidebar shows. The gear on the card changes it too.",
+        keywords: "queue next sidebar now playing view",
+        useDisabled: () =>
+          !useStore($experiment("npvUpNext")) &&
+          `${getExperiment("npvUpNext").label} is turned off in Experiments.`,
+        Control: ({ disabled, label }) => (
+          <Select
+            label={label}
+            value={String(clampUpNextCount(useStore($npvUpNextCount)))}
+            options={NPV_UP_NEXT_COUNTS.map(String)}
+            onChange={(v) => $npvUpNextCount.set(Number(v))}
             disabled={disabled}
           />
         ),
