@@ -1,6 +1,7 @@
 import { useStore } from "@nanostores/react";
 import {
   $disableNpvLyrics,
+  $hideCompactCover,
   $hideNpvLyricsWhenUnavailable,
   $lockedMediaBox,
   $popupLyricsAllowed,
@@ -88,6 +89,20 @@ const groups: GroupDef[] = [
             label={label}
             checked={useStore($showVolumeSlider)}
             onChange={(v) => $showVolumeSlider.set(v)}
+          />
+        ),
+      },
+      {
+        id: "hideCompactCover",
+        label: "Hide Cover in Compact Mode",
+        description:
+          "Compact mode shows only the song and artist names beside the lyrics. Move the pointer to where the cover was to bring it, and its playback controls, back.",
+        keywords: "compact album art artwork image",
+        Control: ({ label }) => (
+          <Toggle
+            label={label}
+            checked={useStore($hideCompactCover)}
+            onChange={(v) => $hideCompactCover.set(v)}
           />
         ),
       },

@@ -28,6 +28,7 @@ import {
   $creditsFollowLastLine,
   $currentLyricsData,
   $duetLinePadding,
+  $hideCompactCover,
   $joinSplitWords,
   $lineHoverBackground,
   $lyricsContainerExists,
@@ -310,6 +311,10 @@ async function OpenPage(
   // the volume band — without it, turning the setting off would leave a gap.
   if ($showVolumeSlider.get()) {
     elem.classList.add("ShowVolumeSlider");
+  }
+
+  if ($hideCompactCover.get()) {
+    elem.classList.add("HideCompactCover");
   }
 
   ApplyExperimentClasses(elem);
@@ -874,6 +879,12 @@ $skipSpicyFont.listen((v) => {
 $showVolumeSlider.listen((v) => {
   if (!PageContainer) return;
   PageContainer.classList.toggle("ShowVolumeSlider", v);
+});
+
+// A CSS gate only: compact mode reads the class to hide the cover.
+$hideCompactCover.listen((v) => {
+  if (!PageContainer) return;
+  PageContainer.classList.toggle("HideCompactCover", v);
 });
 
 // Experiments own their CSS hook here; NowBar.ts handles the rebuild for the ones

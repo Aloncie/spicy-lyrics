@@ -129,6 +129,8 @@ export const $timelineOutsideMediaContent = persistAtom<boolean>(
 );
 // Volume band below the playback controls in Fullscreen / Cinema View / Popup Lyrics.
 export const $showVolumeSlider = persistAtom<boolean>("showVolumeSlider", true);
+// Compact mode without the cover: only the song and artist names beside the lyrics.
+export const $hideCompactCover = persistAtom<boolean>("hideCompactCover", false);
 // Playback timing offset in milliseconds (bipolar: negative = earlier, positive = later)
 export const $playbackOffset = persistAtom<number>("playbackOffset", 0);
 // Clicking a line seeks this much earlier, so Spotify's ~300ms fade-in on seek

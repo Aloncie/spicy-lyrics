@@ -2290,3 +2290,30 @@
 #SpicyLyricsPage .MediaImageContainer .fi_FromImage.MB_anim_fimg::before {
   opacity: 1;
 }
+/* --- Compact mode without the cover ------------------------------------------ */
+/* The names move to the lyrics' edge. The cover box stays where it was, invisible,
+   so the pointer over it brings the cover and its playback controls back. */
+#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .CenteredView
+  .Header {
+  --MetadataLeftSidePadding: 0px;
+}
+
+#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .Header
+  .MediaBox {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+#SpicyLyricsPage.HideCompactCover:is(.CompactMode, .ForcedCompactMode)
+  .ContentBox
+  .NowBar
+  .Header
+  .MediaBox:hover {
+  opacity: 1;
+}
