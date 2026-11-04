@@ -21,7 +21,7 @@ let colourToken = 0;
 const SAMPLE = 24;
 
 function formatTime(now: Date): string {
-  return now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  return now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
 function formatDate(now: Date): string {
@@ -127,6 +127,10 @@ function updateColours() {
     applyColours(null);
     return;
   }
+  // The client hands covers out as spotify:image:<id>; reading the pixels needs a normal URL.
+  const url = cover.startsWith("spotify:image:")
+    ? `https://i.scdn.co/image/${cover.slice(14)}`
+    : cover;
   const img = new Image();
   img.crossOrigin = "anonymous";
   img.onload = () => {
@@ -141,7 +145,7 @@ function updateColours() {
   img.onerror = () => {
     if (token === colourToken) applyColours(null);
   };
-  img.src = cover;
+  img.src = url;
 }
 
 export function OpenFullscreenClock() {
