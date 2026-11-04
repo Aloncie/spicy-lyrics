@@ -1,5 +1,46 @@
-/* Sidebar blocks dropped from Settings → Interface (npvHiddenSections.ts). */
-body.SL_NpvHideCredits .main-nowPlayingView-section.main-nowPlayingView-credits,
-body.SL_NpvHideAboutArtist .main-nowPlayingView-section.main-nowPlayingView-aboutArtist {
+/* Sidebar blocks dropped or folded from Settings → Interface (NPVHiddenSections.ts). */
+body.SL_NpvHideCredits .main-nowPlayingView-credits,
+body.SL_NpvHideAboutArtist .main-nowPlayingView-aboutArtist,
+body.SL_NpvHideOnTour .main-nowPlayingView-artistOnTour {
   display: none !important;
+}
+
+/* The music video block keeps only its title row, which opens it when clicked. */
+body.SL_NpvCollapseMusicVideo
+  .main-nowPlayingView-musicVideo:not(.SL_Expanded)
+  > :not(.main-nowPlayingView-sectionHeader) {
+  display: none !important;
+}
+
+body.SL_NpvCollapseMusicVideo .main-nowPlayingView-musicVideo > .main-nowPlayingView-sectionHeader {
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+}
+
+/* A chevron after the title says the row opens; it turns over once it has. */
+body.SL_NpvCollapseMusicVideo .main-nowPlayingView-musicVideo > .main-nowPlayingView-sectionHeader::after {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin: 0 6px 2px auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  opacity: 0.7;
+  rotate: 45deg;
+  transition: rotate 160ms ease;
+}
+
+body.SL_NpvCollapseMusicVideo
+  .main-nowPlayingView-musicVideo.SL_Expanded
+  > .main-nowPlayingView-sectionHeader::after {
+  rotate: 225deg;
+  margin-bottom: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.SL_NpvCollapseMusicVideo .main-nowPlayingView-musicVideo > .main-nowPlayingView-sectionHeader::after {
+    transition: none;
+  }
 }
