@@ -67,6 +67,7 @@ import {
 } from "../Utils/NowBar.ts";
 import TransferElement from "../Utils/TransferElement.ts";
 import { IsPIP, _IsPIP_after, ClosePopupLyrics } from "../Utils/PopupLyrics.ts";
+import "../Utils/CompactHeaderPeek.ts";
 import { NPVCardOwnsPage, DeRenderNPVCard } from "../Utils/NPVLyrics.ts";
 import { ShowFullscreenHint } from "../Utils/FullscreenHint.ts";
 import { IsLyricsAreaHiddenForMissingLyrics } from "../../utils/Lyrics/LyricsNotice.ts";
@@ -984,6 +985,7 @@ $showVolumeSlider.listen((v) => {
 function applyCompactHeaderClass(elem: HTMLElement, value: string) {
   elem.classList.toggle("CompactHeaderNames", value === "names");
   elem.classList.toggle("CompactHeaderNone", value === "none");
+  elem.classList.remove("CompactHeaderPeek");
 }
 $compactHeader.listen((v) => {
   if (!PageContainer) return;
