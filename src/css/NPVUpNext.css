@@ -68,6 +68,59 @@ body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
   transition: color 120ms ease, background-color 120ms ease, opacity 120ms ease;
 }
 
+.SL_UpNext .SL_UN_Actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.SL_UpNext .SL_UN_Clear,
+.SL_UpNext .SL_UN_Fold {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-subdued, rgba(255, 255, 255, 0.7));
+  cursor: pointer;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.SL_UpNext .SL_UN_Clear[hidden] {
+  display: none;
+}
+
+.SL_UpNext .SL_UN_Clear:hover,
+.SL_UpNext .SL_UN_Fold:hover {
+  color: var(--text-base, #fff);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.SL_UpNext .SL_UN_Clear:focus-visible,
+.SL_UpNext .SL_UN_Fold:focus-visible {
+  outline: 2px solid var(--text-base, #fff);
+  outline-offset: -2px;
+}
+
+/* The arrow turns over once the card is folded; the list goes with it. */
+.SL_UpNext .SL_UN_Fold svg {
+  transition: rotate 160ms ease;
+}
+
+.SL_UpNext.SL_Collapsed .SL_UN_Fold svg {
+  rotate: -90deg;
+}
+
+.SL_UpNext.SL_Collapsed .SL_UN_List {
+  display: none;
+}
+
 .SL_UpNext .SL_UN_Gear svg {
   width: 18px;
   height: 18px;
@@ -330,6 +383,7 @@ body.SL_NpvUpNext .main-nowPlayingView-section.main-nowPlayingView-queue {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .SL_UpNext .SL_UN_Fold svg,
   .SL_UpNext .SL_UN_Tab,
   .SL_UpNext .SL_UN_Gear,
   .SL_UpNext .SL_UN_More,

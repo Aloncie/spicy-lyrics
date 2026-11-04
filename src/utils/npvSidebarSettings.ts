@@ -15,6 +15,9 @@ export const $npvUpNextCount = persistAtom<number>("npvUpNextCount", NPV_UP_NEXT
 export type NpvUpNextTab = "next" | "recent";
 export const $npvUpNextTab = persistAtom<NpvUpNextTab>("npvUpNextTab", "next");
 
+/** The card folded up to its header; remembered between sessions. */
+export const $npvUpNextCollapsed = persistAtom<boolean>("npvUpNextCollapsed", false);
+
 /** The saved count, put back into the range the card can show. */
 export function clampUpNextCount(value: unknown): number {
   const n =
