@@ -880,8 +880,11 @@ export function initNPVUpNext(): void {
     });
   }
   // The queue changes when a track ends, when one is queued elsewhere, or when it is skipped.
-  const playerEvents = Spicetify.Platform.PlayerAPI.getEvents?.();
-  playerEvents?.addListener?.("queue_update", onQueueChanged);
+  // On a cold start the player API can still be missing when Spicy boots, so wait for it.
+  Whentil.When(
+    () => Spicetify.Platform?.PlayerAPI?.getEvents?.(),
+    (events) => events?.addListener?.("queue_update", onQueueChanged)
+  );
 
   Whentil.When(
     () => GetNPVObserverRoot(),
